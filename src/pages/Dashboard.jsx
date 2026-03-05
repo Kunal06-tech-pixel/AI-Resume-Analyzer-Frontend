@@ -4,10 +4,10 @@ const Dashboard = () => {
   const { logout } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-100">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
 
       {/* NAVBAR — FULL WIDTH, FAR RIGHT LOGOUT */}
-      <nav className="w-full bg-gradient-to-r from-blue-50 via-white to-pink-50 backdrop-blur-md border-b border-gray-200/60">
+      <nav className="w-full bg-linear-to-r from-blue-50 via-white to-pink-50 backdrop-blur-md border-b border-gray-200/60">
         <div className="flex items-center justify-end px-6 py-4">
           <button
             onClick={logout}
@@ -26,7 +26,7 @@ const Dashboard = () => {
           </span>
 
           {/* GRADIENT TEXT */}
-          <span className="block bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+          <span className="block bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             DREAM JOB
           </span>
         </h1>
