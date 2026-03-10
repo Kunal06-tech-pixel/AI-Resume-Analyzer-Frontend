@@ -1,12 +1,58 @@
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const { logout } = useAuth();
 
+  const [resumeFile, setResumeFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setResumeFile(file);
+      console.log("File selected:", file.name);
+    }
+  };
+
+  const handleClearFile = () => {
+    setResumeFile(null);
+  };
+
+  const handleSubmit = async () => {
+    console.log("BUTTON CLICKED");
+
+    if (!resumeFile) {
+      alert("Please upload a resume first");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("resume", resumeFile);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/resume/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      console.log("SERVER RESPONSE:", data);
+
+      alert("Resume uploaded successfully!");
+
+      // clear file after upload
+      setResumeFile(null);
+
+    } catch (error) {
+      console.error("UPLOAD ERROR:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
 
-      {/* NAVBAR — FULL WIDTH, FAR RIGHT LOGOUT */}
+      {/* NAVBAR */}
       <nav className="w-full bg-linear-to-r from-blue-50 via-white to-pink-50 backdrop-blur-md border-b border-gray-200/60">
         <div className="flex items-center justify-end px-6 py-4">
           <button
@@ -18,14 +64,13 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      {/* HERO */}
       <div className="flex flex-col items-center text-center mt-14 px-4">
         <h1 className="text-4xl md:text-5xl font-bold leading-tight">
           <span className="block text-gray-900">
             Smart feedback for your
           </span>
 
-          {/* GRADIENT TEXT */}
           <span className="block bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             DREAM JOB
           </span>
@@ -71,19 +116,51 @@ const Dashboard = () => {
             {/* Upload Box */}
             <div>
               <label className="text-xs text-gray-500">Upload Resume</label>
-              <div className="mt-2 flex h-32 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-pink-300 text-center cursor-pointer">
+
+              <label className="mt-2 flex h-32 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-pink-300 text-center cursor-pointer hover:border-pink-400 transition">
+
                 <div className="mb-2 text-xl">📄</div>
-                <p className="text-sm font-medium text-gray-700">
-                  Click to upload or drag and drop
-                </p>
-                <p className="text-xs text-gray-400">
-                  PDF, PNG or JPG (max. 10MB)
-                </p>
-              </div>
+
+                {resumeFile ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-sm font-medium text-green-600">
+                      {resumeFile.name}
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={handleClearFile}
+                      className="text-xs text-red-500 hover:underline"
+                    >
+                      Remove file
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-gray-700">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      PDF, PNG or JPG (max. 10MB)
+                    </p>
+                  </>
+                )}
+
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.png,.jpg"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+              </label>
             </div>
 
-            {/* GRADIENT BUTTON */}
-            <button className="mt-4 w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 py-3 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition">
+            {/* BUTTON */}
+            <button
+              onClick={handleSubmit}
+              className="mt-4 w-full rounded-full bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 py-3 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition"
+            >
               Save & Analyze Resume
             </button>
 
