@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import AnalysisResults from "../components/AnalysisResults";
 
 const Dashboard = () => {
+
   const { logout } = useAuth();
 
   const [resumeFile, setResumeFile] = useState(null);
+  const [analysisResult, setAnalysisResult] = useState(null);
+
+  // ⭐ Added states
+  const [companyName, setCompanyName] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -19,6 +27,7 @@ const Dashboard = () => {
   };
 
   const handleSubmit = async () => {
+
     console.log("BUTTON CLICKED");
 
     if (!resumeFile) {
@@ -29,7 +38,13 @@ const Dashboard = () => {
     const formData = new FormData();
     formData.append("resume", resumeFile);
 
+    // ⭐ Added fields to request
+    formData.append("companyName", companyName);
+    formData.append("jobTitle", jobTitle);
+    formData.append("jobDescription", jobDescription);
+
     try {
+
       const response = await fetch("http://localhost:5000/api/resume/upload", {
         method: "POST",
         body: formData
@@ -39,10 +54,7 @@ const Dashboard = () => {
 
       console.log("SERVER RESPONSE:", data);
 
-      alert("Resume uploaded successfully!");
-
-      // clear file after upload
-      setResumeFile(null);
+      setAnalysisResult(data.analysis.raw_output);
 
     } catch (error) {
       console.error("UPLOAD ERROR:", error);
@@ -53,24 +65,19 @@ const Dashboard = () => {
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
 
       {/* NAVBAR */}
-      <nav className="w-full bg-linear-to-r from-blue-50 via-white to-pink-50 backdrop-blur-md border-b border-gray-200/60">
-        <div className="flex items-center justify-end px-6 py-4">
-          <button
-            onClick={logout}
-            className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 transition"
-          >
-            Logout
-          </button>
-        </div>
+      <nav className="w-full flex justify-end p-4">
+        <button
+          onClick={logout}
+          className="rounded-md bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
+        >
+          Logout
+        </button>
       </nav>
 
       {/* HERO */}
-      <div className="flex flex-col items-center text-center mt-14 px-4">
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-          <span className="block text-gray-900">
-            Smart feedback for your
-          </span>
-
+      <div className="flex flex-col items-center text-center mt-10 px-4">
+        <h1 className="text-4xl font-bold leading-tight">
+          Smart feedback for your
           <span className="block bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
             DREAM JOB
           </span>
@@ -84,89 +91,103 @@ const Dashboard = () => {
 
       {/* FORM CARD */}
       <div className="flex justify-center px-4 py-14">
-        <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl p-10">
+        <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl p-10 space-y-5">
 
-          <div className="space-y-5">
-
-            <div>
-              <label className="text-xs text-gray-500">Company Name</label>
-              <input
-                className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
-                placeholder="Company name"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-gray-500">Job Title</label>
-              <input
-                className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
-                placeholder="Job title"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-gray-500">Job Description</label>
-              <textarea
-                rows={4}
-                placeholder="Write a clear & concise job description with responsibilities & expectations..."
-                className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
-              />
-            </div>
-
-            {/* Upload Box */}
-            <div>
-              <label className="text-xs text-gray-500">Upload Resume</label>
-
-              <label className="mt-2 flex h-32 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-pink-300 text-center cursor-pointer hover:border-pink-400 transition">
-
-                <div className="mb-2 text-xl">📄</div>
-
-                {resumeFile ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <p className="text-sm font-medium text-green-600">
-                      {resumeFile.name}
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={handleClearFile}
-                      className="text-xs text-red-500 hover:underline"
-                    >
-                      Remove file
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-sm font-medium text-gray-700">
-                      Click to upload or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      PDF, PNG or JPG (max. 10MB)
-                    </p>
-                  </>
-                )}
-
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx,.png,.jpg"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-
-              </label>
-            </div>
-
-            {/* BUTTON */}
-            <button
-              onClick={handleSubmit}
-              className="mt-4 w-full rounded-full bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 py-3 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition"
-            >
-              Save & Analyze Resume
-            </button>
-
+          {/* Company Name */}
+          <div>
+            <label className="text-xs text-gray-500">Company Name</label>
+            <input
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Company name"
+            />
           </div>
+
+          {/* Job Title */}
+          <div>
+            <label className="text-xs text-gray-500">Job Title</label>
+            <input
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Job title"
+            />
+          </div>
+
+          {/* Job Description */}
+          <div>
+            <label className="text-xs text-gray-500">Job Description</label>
+            <textarea
+              rows={4}
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              placeholder="Write a clear & concise job description with responsibilities & expectations..."
+              className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+            />
+          </div>
+
+          {/* Upload Resume */}
+          <div>
+            <label className="text-xs text-gray-500">Upload Resume</label>
+
+            <label className="mt-2 flex h-32 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-pink-300 bg-white text-center cursor-pointer hover:border-pink-400 transition">
+
+              {resumeFile ? (
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-sm font-medium text-green-600">
+                    {resumeFile.name}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={handleClearFile}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    Remove file
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-gray-700">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    PDF, DOCX, PNG or JPG (max. 10MB)
+                  </p>
+                </>
+              )}
+
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,.png,.jpg"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+            </label>
+          </div>
+
+          {/* Analyze Button */}
+          <button
+            onClick={handleSubmit}
+            className="mt-2 w-full rounded-full bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 py-3 text-white font-semibold shadow-lg hover:opacity-90 transition"
+          >
+            Save & Analyze Resume
+          </button>
+
         </div>
       </div>
+
+      {/* ANALYSIS RESULTS */}
+      {analysisResult && (
+        <div className="flex justify-center px-4 pb-20">
+          <div className="w-full max-w-6xl">
+            <AnalysisResults data={analysisResult} />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
