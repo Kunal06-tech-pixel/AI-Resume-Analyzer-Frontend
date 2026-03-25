@@ -32,38 +32,44 @@ const AnalysisResults = ({ data }) => {
 
         <div>
           <h3 className="font-semibold text-lg">Summary</h3>
-          <p className="text-gray-600">
-            {data?.role_match || "No summary available"}
+          <p className="text-gray-600 leading-relaxed text-sm">
+            {data?.summary || "No summary available"}
           </p>
         </div>
 
       </div>
 
-      {/* SKILLS MATCH */}
-      <div className="bg-white shadow-md rounded-xl p-6">
-        <h3 className="font-semibold mb-3 text-green-600">Skills Match</h3>
+      {/* 🔥 GRID START */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <div className="flex flex-wrap gap-2">
-          {data?.skills_match?.map((skill, i) => (
-            <span key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-              {skill}
-            </span>
-          ))}
+        {/* SKILLS MATCH */}
+        <div className="bg-white shadow-md rounded-xl p-6">
+          <h3 className="font-semibold mb-3 text-green-600">Skills Match</h3>
+
+          <div className="flex flex-wrap gap-2">
+            {data?.skills_match?.map((skill, i) => (
+              <span key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* MISSING KEYWORDS */}
-      <div className="bg-white shadow-md rounded-xl p-6">
-        <h3 className="font-semibold mb-3 text-red-500">Missing Keywords</h3>
+        {/* MISSING KEYWORDS */}
+        <div className="bg-white shadow-md rounded-xl p-6">
+          <h3 className="font-semibold mb-3 text-red-500">Missing Keywords</h3>
 
-        <div className="flex flex-wrap gap-2">
-          {data?.missing_keywords?.map((skill, i) => (
-            <span key={i} className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">
-              {skill}
-            </span>
-          ))}
+          <div className="flex flex-wrap gap-2">
+            {data?.missing_keywords?.map((skill, i) => (
+              <span key={i} className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
+
       </div>
+      {/* 🔥 GRID END */}
 
       {/* EXPERIENCE */}
       <div className="bg-white shadow-md rounded-xl p-6">
