@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/axios";
 import { useAuth } from "../context/AuthContext";
+import { useLocation } from "react-router-dom";
 
 const inputClass =
   "w-full h-11 rounded-xl border border-gray-200 px-4 text-gray-700 placeholder:text-gray-400 leading-tight appearance-none focus:outline-none focus:ring-2 focus:ring-primary";
 
 const AuthCard = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const location = useLocation();
+
+  const [isLogin, setIsLogin] = useState(true); // default
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { setUser } = useAuth(); // 🔑 context
+  const { setUser } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -18,6 +21,15 @@ const AuthCard = () => {
     password: "",
     confirmPassword: "",
   });
+
+  // ✅ HANDLE ROUTE STATE SAFELY (IMPORTANT FIX)
+  useEffect(() => {
+    if (location.state?.mode === "signup") {
+      setIsLogin(false);
+    } else if (location.state?.mode === "login") {
+      setIsLogin(true);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,16 +42,13 @@ const AuthCard = () => {
 
     try {
       if (isLogin) {
-        // 🔐 LOGIN (HttpOnly cookie)
         const res = await api.post("/api/auth/login", {
           email: form.email,
           password: form.password,
         });
 
-        // ✅ cookie-based auth → just set user
         setUser(res.data.user);
       } else {
-        // 📝 SIGNUP
         if (form.password !== form.confirmPassword) {
           throw new Error("Passwords do not match");
         }
@@ -50,8 +59,9 @@ const AuthCard = () => {
           password: form.password,
         });
 
-        // switch to login after signup
+        // ✅ Switch to login after signup
         setIsLogin(true);
+
         setForm({
           name: "",
           email: "",
@@ -68,7 +78,8 @@ const AuthCard = () => {
 
   return (
     <div className="w-full max-w-md rounded-3xl bg-white/80 backdrop-blur-md shadow-xl p-8">
-      {/* Header */}
+
+      {/* HEADER */}
       <div className="text-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">
           {isLogin ? "Welcome Back" : "Create Account"}
@@ -80,13 +91,14 @@ const AuthCard = () => {
         </p>
       </div>
 
-      {/* Error */}
+      {/* ERROR */}
       {error && (
         <p className="text-center text-sm text-red-500 mb-3">{error}</p>
       )}
 
-      {/* Form */}
+      {/* FORM */}
       <form className="space-y-4" onSubmit={handleSubmit}>
+
         {!isLogin && (
           <div>
             <label className="text-sm text-gray-600 block mb-1">
@@ -147,22 +159,18 @@ const AuthCard = () => {
           </div>
         )}
 
-        {/* Button */}
+        {/* BUTTON */}
         <button
           type="submit"
           disabled={loading}
-          className="
-            w-full h-11 mt-4 rounded-xl
-            bg-linear-to-r from-indigo-500 to-blue-500
-            text-white font-medium shadow-md
-            hover:opacity-90 transition
-          "
+          className="w-full h-11 mt-4 rounded-xl bg-linear-to-r from-indigo-500 to-blue-500 text-white font-medium shadow-md hover:opacity-90 transition"
         >
           {loading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
         </button>
+
       </form>
 
-      {/* Toggle */}
+      {/* TOGGLE */}
       <p className="text-center text-sm text-gray-500 mt-6">
         {isLogin ? "Don’t have an account?" : "Already have an account?"}{" "}
         <span
@@ -172,6 +180,7 @@ const AuthCard = () => {
           {isLogin ? "Sign up" : "Log in"}
         </span>
       </p>
+
     </div>
   );
 };
