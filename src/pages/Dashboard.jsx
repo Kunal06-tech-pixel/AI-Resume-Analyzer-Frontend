@@ -1,61 +1,65 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import DashboardResumeAnalyzer from "../components/DashboardResumeAnalyzer";
-import LogoutButton from "../components/LogoutButton"; // ✅ NEW
+import LogoutButton from "../components/LogoutButton";
+import NavButton3D from "../components/NavButton3D";
+import HeroBackground from "../components/HeroBackground"; // ✅ ADD THIS
+
+// ICONS
+import { BarChart3, FileText } from "lucide-react";
 
 const Dashboard = () => {
-
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
+    <div className="relative min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
 
-      {/* ✅ NAVBAR */}
-      <nav className="w-full flex items-center justify-between px-6 py-4 bg-white shadow-sm">
+      {/* 🔥 CAPSULE BACKGROUND (SAME AS LANDING) */}
+      <HeroBackground />
 
-        {/* LEFT */}
-        <h1
-          onClick={() => navigate("/")}
-          className="text-lg font-semibold cursor-pointer"
-        >
-          ATSmind AI
-        </h1>
+      {/* CONTENT WRAPPER */}
+      <div className="relative z-10">
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-6">
+        {/* NAVBAR */}
+        <nav className="z-50 w-full flex items-center justify-between px-8 py-4 backdrop-blur-md bg-white/70 border-b border-gray-200 sticky top-0">
 
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="text-sm text-gray-700 hover:text-purple-600 transition"
+          {/* LEFT */}
+          <h1
+            onClick={() => navigate("/")}
+            className="text-lg font-semibold cursor-pointer tracking-tight"
           >
-            Analyzer
-          </button>
+            ATSmind AI
+          </h1>
 
-          <button
-            onClick={() => navigate("/builder")}
-            className="text-sm text-gray-700 hover:text-purple-600 transition"
-          >
-            Builder
-          </button>
+          {/* RIGHT */}
+          <div className="flex items-center gap-3">
 
-          {/* ✅ USER EMAIL */}
-          {user && (
-            <span className="text-sm text-gray-600">
-              {user.email}
-            </span>
-          )}
+            <NavButton3D icon={BarChart3} onClick={() => navigate("/dashboard")}>
+              Analyzer
+            </NavButton3D>
 
-          {/* 🔥 NEW ANIMATED LOGOUT BUTTON */}
-          <LogoutButton onClick={logout} />
+            <NavButton3D icon={FileText} onClick={() => navigate("/builder")}>
+              Builder
+            </NavButton3D>
 
-        </div>
+            {/* USER NAME */}
+            {user && (
+              <span className="text-sm text-gray-700 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                {user.name}
+              </span>
+            )}
 
-      </nav>
+            {/* LOGOUT BUTTON */}
+            <LogoutButton onClick={logout} />
 
-      {/* MAIN */}
-      <DashboardResumeAnalyzer />
+          </div>
+        </nav>
 
+        {/* MAIN */}
+        <DashboardResumeAnalyzer />
+
+      </div>
     </div>
   );
 };

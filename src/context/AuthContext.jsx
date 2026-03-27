@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import api from "../services/axios"; // ✅ USE CENTRAL AXIOS
+import api from "../services/axios";
 
 const AuthContext = createContext();
 
@@ -12,7 +12,10 @@ export const AuthProvider = ({ children }) => {
     api
       .get("/api/user/profile")
       .then((res) => {
-        setUser({ id: res.data.userId });
+        console.log("PROFILE RESPONSE:", res.data); // 🔍 DEBUG
+
+        // ✅ STORE FULL USER OBJECT
+        setUser(res.data);
       })
       .catch(() => {
         setUser(null);
@@ -25,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post("/api/auth/logout");
     } catch (err) {
-      // even if request fails, still logout locally
+      console.error("Logout error:", err);
     } finally {
       setUser(null);
     }
@@ -38,4 +41,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// 🔐 Hook
 export const useAuth = () => useContext(AuthContext);
