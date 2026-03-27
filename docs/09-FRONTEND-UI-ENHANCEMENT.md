@@ -6,7 +6,7 @@
 - Enhanced ATS score visualization (circular/progress style)
 - Styled sections for skills match, missing keywords, and suggestions
 - Added color indicators for better visual feedback (e.g., green/red highlights)
-- Improved responsiveness across different screen sizes
+- Improved responsiveness across different screen sizes.
 
 ## Features Implemented
 - Enhanced Resume Analysis UI

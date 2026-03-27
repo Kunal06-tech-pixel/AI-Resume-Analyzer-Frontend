@@ -10,4 +10,4 @@
 ## Features Implemented
 - Resume Analysis Results Interface
 - Loading indicator for AI processing
-- Structured layout for displaying extracted resume insights
+- Structured layout for displaying extracted resume insights.

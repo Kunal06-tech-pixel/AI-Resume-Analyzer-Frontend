@@ -10,4 +10,4 @@
 ## Features Implemented
 - Frontend integration with AI resume analysis API
 - Successful data flow from backend to frontend
-- Console-based debugging for AI response verification
+- Console-based debugging for AI response verification.

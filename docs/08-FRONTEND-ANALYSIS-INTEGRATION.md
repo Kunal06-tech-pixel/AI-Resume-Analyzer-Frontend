@@ -12,4 +12,4 @@
 - In-page Resume Analysis Display (no separate page)
 - ATS score visualization within analyzer UI
 - Structured display of AI-generated insights
-- Dynamic rendering of analysis results based on API response
+- Dynamic rendering of analysis results based on API response.
