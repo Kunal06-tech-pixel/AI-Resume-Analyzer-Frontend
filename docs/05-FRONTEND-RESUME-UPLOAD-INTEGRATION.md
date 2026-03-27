@@ -10,4 +10,4 @@
 ## Features Implemented
 - Functional Resume Upload Interface
 - Resume file submission workflow
-- Frontend integration with backend upload endpoint
+- Frontend integration with backend upload endpoint.

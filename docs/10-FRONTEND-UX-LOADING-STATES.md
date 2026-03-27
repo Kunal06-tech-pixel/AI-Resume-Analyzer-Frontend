@@ -10,4 +10,4 @@
 ## Features Implemented
 - Loading indicator for resume analysis process
 - User feedback system (success/error states)
-- Improved UX for async operations
+- Improved UX for async operations.

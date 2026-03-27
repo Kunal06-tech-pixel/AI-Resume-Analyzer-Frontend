@@ -8,4 +8,4 @@
 
 ## Features Implemented
 - Basic React application setup
-- Project structure for scalable frontend development
+- Project structure for scalable frontend development.

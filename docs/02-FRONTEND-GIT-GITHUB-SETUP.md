@@ -8,7 +8,7 @@
 
 ## Features Implemented
 - Version control integration
-- Initial project repository management
+- Initial project repository management.
 
 
 ## 🔧 Commands Used:

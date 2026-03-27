@@ -11,4 +11,4 @@
 - Component-based UI architecture
 - Reusable React components for scalable development
 - Improved maintainability and cleaner code structure
-- Consistent design across multiple pages
+- Consistent design across multiple pages.

@@ -8,4 +8,4 @@
 
 ## Features Implemented
 - Resume Upload Page UI
-- File selection interface for resumes
+- File selection interface for resumes.

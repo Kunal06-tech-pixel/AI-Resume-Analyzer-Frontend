@@ -11,4 +11,4 @@
 - Landing Page for application entry
 - Resume Builder Page (initial skeleton UI)
 - Page navigation using DOM-based routing
-- Improved application flow between different sections
+- Improved application flow between different sections.
