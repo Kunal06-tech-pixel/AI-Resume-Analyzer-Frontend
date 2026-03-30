@@ -1,9 +1,9 @@
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DashboardResumeAnalyzer from "../components/DashboardResumeAnalyzer";
 import LogoutButton from "../components/LogoutButton";
 import NavButton3D from "../components/NavButton3D";
-import HeroBackground from "../components/HeroBackground"; // ✅ ADD THIS
+import HeroBackground from "../components/HeroBackground";
 
 // ICONS
 import { BarChart3, FileText } from "lucide-react";
@@ -11,6 +11,10 @@ import { BarChart3, FileText } from "lucide-react";
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 🔥 BUILDER ANALYSIS RESULT
+  const builderAnalysis = location.state?.analysisResult || null;
 
   return (
     <div className="relative min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
@@ -35,11 +39,17 @@ const Dashboard = () => {
           {/* RIGHT */}
           <div className="flex items-center gap-3">
 
-            <NavButton3D icon={BarChart3} onClick={() => navigate("/dashboard")}>
+            <NavButton3D
+              icon={BarChart3}
+              onClick={() => navigate("/dashboard")}
+            >
               Analyzer
             </NavButton3D>
 
-            <NavButton3D icon={FileText} onClick={() => navigate("/builder")}>
+            <NavButton3D
+              icon={FileText}
+              onClick={() => navigate("/builder")}
+            >
               Builder
             </NavButton3D>
 
@@ -56,8 +66,8 @@ const Dashboard = () => {
           </div>
         </nav>
 
-        {/* MAIN */}
-        <DashboardResumeAnalyzer />
+        {/* 🔥 MAIN (NOW SUPPORTS BUILDER FLOW) */}
+        <DashboardResumeAnalyzer preloadedResult={builderAnalysis} />
 
       </div>
     </div>

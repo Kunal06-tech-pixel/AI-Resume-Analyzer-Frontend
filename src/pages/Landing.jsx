@@ -5,7 +5,7 @@ import LogoutButton from "../components/LogoutButton";
 import LoginButton from "../components/LoginButton";
 import NavButton3D from "../components/NavButton3D";
 
-// ✅ ICONS ADDED
+// ICONS
 import {
   Brain,
   ShieldCheck,
@@ -16,7 +16,7 @@ import {
   CheckCircle,
   Edit3,
   Eye,
-  Download
+  Download,
 } from "lucide-react";
 
 export default function Landing() {
@@ -31,39 +31,57 @@ export default function Landing() {
     { title: "Resume Builder", icon: FileText },
   ];
 
+  const goToLogin = () =>
+    navigate("/login", { state: { mode: "login" } });
+
+  const goToSignup = () =>
+    navigate("/login", { state: { mode: "signup" } });
+
   return (
     <div className="relative min-h-screen bg-linear-to-br from-blue-100 via-white to-pink-200">
 
+      {/* HERO CAPSULE BACKGROUND */}
       <HeroBackground />
 
       {/* NAVBAR */}
       <nav className="z-50 w-full flex items-center justify-between px-8 py-4 backdrop-blur-sm bg-white/70 border-b border-gray-200 sticky top-0">
-        <h1 onClick={() => navigate("/")} className="text-lg font-semibold cursor-pointer tracking-tight">
+        <h1
+          onClick={() => navigate("/")}
+          className="text-lg font-semibold cursor-pointer tracking-tight"
+        >
           ATSmind AI
         </h1>
 
         <div className="flex items-center gap-3">
-          <NavButton3D icon={BarChart3} onClick={() => navigate("/dashboard")}>
+          <NavButton3D
+            icon={BarChart3}
+            onClick={() => navigate("/dashboard")}
+          >
             Analyzer
           </NavButton3D>
 
-          <NavButton3D icon={FileText} onClick={() => navigate("/builder")}>
+          <NavButton3D
+            icon={FileText}
+            onClick={() => navigate("/builder")}
+          >
             Builder
           </NavButton3D>
 
           {user ? (
             <>
-              <span className="text-xm text-gray-700 font-medium bg-gray-100 px-3 py-1">
+              <span className="text-sm text-gray-700 font-medium bg-gray-100 px-3 py-1 rounded-full">
                 {user.name}
               </span>
               <LogoutButton onClick={logout} />
             </>
           ) : (
             <>
-              <LoginButton onClick={() => navigate("/login", { state: { mode: "login" } })} />
+              {/* 🔥 RESTORED PREMIUM LOGIN BUTTON */}
+              <LoginButton onClick={goToLogin}>Login</LoginButton>
+
               <button
-                onClick={() => navigate("/login", { state: { mode: "signup" } })}
-                className="px-4 py-2 rounded-full bg-linear-to-r from-purple-500 to-blue-500 text-white text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 transition flex items-center justify-center"
+                onClick={goToSignup}
+                className="px-4 py-2 rounded-full bg-linear-to-r from-purple-500 to-blue-500 text-white text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 transition"
               >
                 Sign Up
               </button>
@@ -115,18 +133,25 @@ export default function Landing() {
       {/* FEATURES */}
       <section className="relative z-10 mt-28 px-6">
         <h2 className="text-center text-xl font-semibold mb-12">
-          Everything You Need to <span className="text-purple-600">Land Your Dream Job</span>
+          Everything You Need to{" "}
+          <span className="text-purple-600">Land Your Dream Job</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((item, i) => {
             const Icon = item.icon;
+
             return (
-              <div key={i} className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition">
+              <div
+                key={i}
+                className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition"
+              >
                 <div className="w-12 h-12 rounded-xl mb-4 flex items-center justify-center bg-linear-to-r from-purple-200 to-blue-200">
                   <Icon size={22} className="text-purple-700" />
                 </div>
+
                 <h3 className="font-semibold text-sm">{item.title}</h3>
+
                 <p className="text-xs text-gray-500 mt-2 leading-relaxed">
                   Powerful tools to optimize your resume and increase your chances.
                 </p>
@@ -138,7 +163,9 @@ export default function Landing() {
 
       {/* HOW IT WORKS */}
       <section className="relative z-10 mt-28 px-6 pb-20">
-        <h2 className="text-center text-xl font-semibold mb-12">How It Works</h2>
+        <h2 className="text-center text-xl font-semibold mb-12">
+          How It Works
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
 
@@ -169,9 +196,7 @@ export default function Landing() {
             </div>
 
             <button
-              onClick={() =>
-                navigate(user ? "/dashboard" : "/login", user ? {} : { state: { mode: "login" } })
-              }
+              onClick={() => (user ? navigate("/dashboard") : goToLogin())}
               className="w-full py-2 rounded-full bg-linear-to-r from-purple-500 to-blue-500 text-white text-sm shadow hover:scale-[1.02] transition"
             >
               Analyze Your Resume →
@@ -205,35 +230,18 @@ export default function Landing() {
             </div>
 
             <button
-              onClick={() =>
-                navigate(user ? "/builder" : "/login", user ? {} : { state: { mode: "signup" } })
-              }
-              className="
-                w-full py-2
-                rounded-full
-                text-sm font-medium
-                border border-purple-400
-                text-purple-600
-                bg-transparent
-                transition-all duration-300 ease-out
-                hover:text-white
-                hover:bg-linear-to-r hover:from-purple-500 hover:to-blue-500
-                hover:shadow-lg
-                hover:scale-[1.02]
-                active:scale-[0.97]
-              "
+              onClick={() => (user ? navigate("/builder") : goToSignup())}
+              className="w-full py-2 rounded-full text-sm font-medium border border-purple-400 text-purple-600 bg-transparent transition-all duration-300 hover:text-white hover:bg-linear-to-r hover:from-purple-500 hover:to-blue-500 hover:shadow-lg hover:scale-[1.02]"
             >
               Build Your Resume →
             </button>
           </div>
-
         </div>
       </section>
 
       <footer className="relative z-10 text-center text-xs text-gray-400 pb-6">
         © 2026 ATSmind AI. All rights reserved.
       </footer>
-
     </div>
   );
 }
