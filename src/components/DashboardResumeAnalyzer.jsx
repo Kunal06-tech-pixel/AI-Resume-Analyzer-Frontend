@@ -1,17 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 import AnalysisResults from "./AnalysisResults";
 
-export default function DashboardResumeAnalyzer() {
-
+export default function DashboardResumeAnalyzer({
+  preloadedResult = null,
+}) {
   const [resumeFile, setResumeFile] = useState(null);
-  const [analysisResult, setAnalysisResult] = useState(null);
+
+  // ✅ BUILDER RESULT SUPPORT
+  const [analysisResult, setAnalysisResult] = useState(
+    preloadedResult || null
+  );
+
   const [loading, setLoading] = useState(false);
 
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
 
-  // ✅ NEW REFS
   const loaderRef = useRef(null);
   const resultRef = useRef(null);
 
@@ -31,7 +36,6 @@ export default function DashboardResumeAnalyzer() {
   };
 
   const handleSubmit = async () => {
-
     if (!resumeFile) {
       alert("Please upload a resume first");
       return;
@@ -46,18 +50,19 @@ export default function DashboardResumeAnalyzer() {
     formData.append("jobDescription", jobDescription);
 
     try {
-
-      const res = await fetch("http://localhost:5000/api/resume/upload", {
-        method: "POST",
-        body: formData
-      });
+      const res = await fetch(
+        "http://localhost:5000/api/resume/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
 
       console.log("SERVER RESPONSE:", data);
 
       setAnalysisResult(data.analysis.raw_output);
-
     } catch (error) {
       console.error(error);
       alert("Upload failed");
@@ -69,14 +74,18 @@ export default function DashboardResumeAnalyzer() {
   // ✅ AUTO SCROLL TO LOADER
   useEffect(() => {
     if (loading && loaderRef.current) {
-      loaderRef.current.scrollIntoView({ behavior: "smooth" });
+      loaderRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
     }
   }, [loading]);
 
   // ✅ AUTO SCROLL TO RESULTS
   useEffect(() => {
     if (!loading && analysisResult && resultRef.current) {
-      resultRef.current.scrollIntoView({ behavior: "smooth" });
+      resultRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
     }
   }, [analysisResult, loading]);
 
@@ -101,7 +110,9 @@ export default function DashboardResumeAnalyzer() {
         <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl p-10 space-y-5">
 
           <div>
-            <label className="text-xs text-gray-500">Company Name</label>
+            <label className="text-xs text-gray-500">
+              Company Name
+            </label>
             <input
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
@@ -111,7 +122,9 @@ export default function DashboardResumeAnalyzer() {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500">Job Title</label>
+            <label className="text-xs text-gray-500">
+              Job Title
+            </label>
             <input
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
@@ -121,7 +134,9 @@ export default function DashboardResumeAnalyzer() {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500">Job Description</label>
+            <label className="text-xs text-gray-500">
+              Job Description
+            </label>
             <textarea
               rows={4}
               value={jobDescription}
@@ -131,9 +146,11 @@ export default function DashboardResumeAnalyzer() {
             />
           </div>
 
-          {/* Upload */}
+          {/* UPLOAD */}
           <div>
-            <label className="text-xs text-gray-500">Upload Resume</label>
+            <label className="text-xs text-gray-500">
+              Upload Resume
+            </label>
 
             <div className="mt-2 flex flex-col items-center">
 
@@ -160,7 +177,6 @@ export default function DashboardResumeAnalyzer() {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-
               </label>
 
               {resumeFile && (
@@ -172,7 +188,6 @@ export default function DashboardResumeAnalyzer() {
                   Remove file
                 </button>
               )}
-
             </div>
           </div>
 
@@ -183,57 +198,33 @@ export default function DashboardResumeAnalyzer() {
           >
             Save & Analyze Resume
           </button>
-
         </div>
       </div>
 
-      {/* 🔥 LOADING */}
+      {/* LOADING */}
       {loading && (
         <div ref={loaderRef} className="mt-10 w-full max-w-5xl">
 
           <div className="bg-white rounded-xl shadow-md p-10 flex flex-col items-center gap-6 animate-pulse">
-
             <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-
-            <p className="text-gray-500 text-sm">Analyzing your resume...</p>
-
-            <div className="flex gap-10 mt-4">
-              <div className="w-32 h-32 bg-gray-200 rounded-full"></div>
-              <div className="w-32 h-32 bg-gray-200 rounded-full"></div>
-            </div>
-
-            <div className="w-full mt-6 space-y-3">
-              <div className="h-3 bg-gray-200 rounded w-3/4 mx-auto"></div>
-              <div className="h-3 bg-gray-200 rounded w-2/3 mx-auto"></div>
-            </div>
-
+            <p className="text-gray-500 text-sm">
+              Analyzing your resume...
+            </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {[1,2,3,4].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md p-6 space-y-4 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                <div className="space-y-2">
-                  <div className="h-3 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-
         </div>
       )}
 
       {/* RESULTS */}
       {!loading && analysisResult && (
-        <div ref={resultRef} className="flex justify-center px-4 pb-20 w-full">
+        <div
+          ref={resultRef}
+          className="flex justify-center px-4 pb-20 w-full"
+        >
           <div className="w-full max-w-6xl">
             <AnalysisResults data={analysisResult} />
           </div>
         </div>
       )}
-
     </div>
   );
 }
