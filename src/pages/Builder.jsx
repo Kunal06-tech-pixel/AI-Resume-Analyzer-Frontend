@@ -7,6 +7,7 @@ import ResumePreview from "../components/builder/ResumePreview";
 import PersonalInfoForm from "../components/builder/forms/PersonalInfoForm";
 import ExperienceForm from "../components/builder/forms/ExperienceForm";
 import EducationForm from "../components/builder/forms/EducationForm";
+import ProjectsForm from "../components/builder/forms/ProjectsForm";
 import SkillsForm from "../components/builder/forms/SkillsForm";
 
 import HeroBackground from "../components/HeroBackground";
@@ -42,15 +43,28 @@ const Builder = () => {
       },
     ],
 
-    // ✅ UPDATED EDUCATION SHAPE
-    education: {
-      school: "",
-      degree: "",
-      field: "",
-      start: "",
-      end: "",
-      gpa: "",
-    },
+    education: [
+      {
+        school: "",
+        degree: "",
+        field: "",
+        start: "",
+        end: "",
+        gpa: "",
+      },
+    ],
+
+    // ✅ NEW PROJECTS SUPPORT
+    projects: [
+      {
+        title: "",
+        techStack: "",
+        duration: "",
+        description: "",
+        github: "",
+        liveLink: "",
+      },
+    ],
 
     skills: {
       technical: [],
@@ -59,7 +73,7 @@ const Builder = () => {
   });
 
   const nextStep = () => {
-    if (currentStep < 4) setCurrentStep((prev) => prev + 1);
+    if (currentStep < 5) setCurrentStep((prev) => prev + 1);
   };
 
   const prevStep = () => {
@@ -85,11 +99,20 @@ ${resumeData.experience
   .join(" ")}
 
 EDUCATION:
-${resumeData.education.school}
-${resumeData.education.degree}
-${resumeData.education.field}
-${resumeData.education.start} - ${resumeData.education.end}
-GPA: ${resumeData.education.gpa}
+${resumeData.education
+  .map(
+    (edu) =>
+      `${edu.degree} in ${edu.field} from ${edu.school} (${edu.start} - ${edu.end}) GPA: ${edu.gpa}`
+  )
+  .join(" ")}
+
+PROJECTS:
+${resumeData.projects
+  .map(
+    (project) =>
+      `${project.title} built using ${project.techStack}. ${project.description}. GitHub: ${project.github}. Live: ${project.liveLink}`
+  )
+  .join(" ")}
 
 SKILLS:
 ${resumeData.skills.technical.join(", ")}
@@ -139,6 +162,14 @@ ${resumeData.skills.soft.join(", ")}
 
       case 4:
         return (
+          <ProjectsForm
+            data={resumeData}
+            setData={setResumeData}
+          />
+        );
+
+      case 5:
+        return (
           <SkillsForm
             data={resumeData}
             setData={setResumeData}
@@ -152,12 +183,10 @@ ${resumeData.skills.soft.join(", ")}
 
   return (
     <div className="relative min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
-      {/* 🔥 SAME CAPSULE BACKGROUND */}
       <HeroBackground />
 
-      {/* CONTENT */}
       <div className="relative z-10">
-        {/* ✅ SAME NAVBAR AS LANDING */}
+        {/* NAVBAR */}
         <nav className="z-50 w-full flex items-center justify-between px-8 py-4 backdrop-blur-sm bg-white/70 border-b border-gray-200 sticky top-0">
           <h1
             onClick={() => navigate("/")}
@@ -199,11 +228,10 @@ ${resumeData.skills.soft.join(", ")}
 
         {/* MAIN */}
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4 pb-10">
-          {/* LEFT FORM */}
+          {/* LEFT */}
           <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
             {renderStep()}
 
-            {/* NAV BUTTONS */}
             <div className="flex justify-between mt-6">
               <button
                 onClick={prevStep}
@@ -215,20 +243,20 @@ ${resumeData.skills.soft.join(", ")}
 
               <button
                 onClick={
-                  currentStep === 4
+                  currentStep === 5
                     ? handleAnalyzeResume
                     : nextStep
                 }
                 className="px-5 py-2 rounded-full bg-linear-to-r from-purple-500 to-blue-500 text-white shadow-md hover:scale-105 transition"
               >
-                {currentStep === 4
+                {currentStep === 5
                   ? "Analyze Resume ✨"
                   : "Next Step →"}
               </button>
             </div>
           </div>
 
-          {/* RIGHT PREVIEW */}
+          {/* RIGHT */}
           <div className="sticky top-24 h-fit">
             <ResumePreview data={resumeData} />
           </div>
