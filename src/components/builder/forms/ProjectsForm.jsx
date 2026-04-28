@@ -1,10 +1,11 @@
 import React from "react";
-
+import api from "../../../utils/api";
 const emptyProject = {
   title: "",
   techStack: "",
   description: "",
-  link: "",
+  github: "",
+  live: "",
 };
 
 const ProjectsForm = ({ data, setData }) => {
@@ -34,6 +35,38 @@ const ProjectsForm = ({ data, setData }) => {
     }));
   };
 
+  // ✅ AI SUGGESTION HANDLER
+  const handleAISuggestions = async (index) => {
+    try {
+      const project = data.projects[index];
+
+      if (!project.description) {
+        alert("Please write some description first");
+        return;
+      }
+
+      const res = await api.post("/api/ai/improve", {
+        section: "project",
+        text: project.description,
+      });
+
+      const improvedText = res.data.improved.join("\n");
+
+      setData((prev) => {
+        const updated = [...prev.projects];
+        updated[index].description = improvedText;
+
+        return {
+          ...prev,
+          projects: updated,
+        };
+      });
+    } catch (err) {
+      console.error("AI error:", err);
+      alert("AI suggestions failed");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -50,7 +83,7 @@ const ProjectsForm = ({ data, setData }) => {
         <button
           type="button"
           onClick={addProject}
-          className="px-4 py-2 rounded-lg bg-linear-to-r from-purple-500 to-blue-500 text-white text-sm shadow-md hover:scale-105 transition"
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white text-sm shadow-md hover:scale-105 transition"
         >
           + Add
         </button>
@@ -91,23 +124,49 @@ const ProjectsForm = ({ data, setData }) => {
             className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
           />
 
-          {/* DESCRIPTION */}
-          <textarea
-            name="description"
-            value={project.description}
-            onChange={(e) => handleChange(index, e)}
-            rows="4"
-            placeholder="Describe what this project does, your contribution, and impact..."
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none resize-none focus:ring-2 focus:ring-blue-400"
-          />
+          {/* ✅ DESCRIPTION WITH AI */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700">
+                Description
+              </label>
 
-          {/* LINK */}
+              <button
+                type="button"
+                onClick={() => handleAISuggestions(index)}
+                className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
+              >
+                ✨ AI Suggestions
+              </button>
+            </div>
+
+            <textarea
+              name="description"
+              value={project.description}
+              onChange={(e) => handleChange(index, e)}
+              rows="4"
+              placeholder="Describe what this project does, your contribution, and impact..."
+              className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none resize-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          {/* GITHUB */}
           <input
             type="text"
-            name="link"
-            value={project.link}
+            name="github"
+            value={project.github}
             onChange={(e) => handleChange(index, e)}
-            placeholder="Project Link / GitHub URL"
+            placeholder="GitHub Repository Link"
+            className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+          />
+
+          {/* LIVE */}
+          <input
+            type="text"
+            name="live"
+            value={project.live}
+            onChange={(e) => handleChange(index, e)}
+            placeholder="Live Project Link (optional)"
             className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>

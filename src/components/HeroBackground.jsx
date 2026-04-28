@@ -19,7 +19,7 @@ function ElegantShape({
         delay,
         ease: [0.23, 0.86, 0.39, 0.96],
       }}
-      className={cn("absolute", className)}
+      className={cn("absolute pointer-events-none", className)} // ✅ FIX
     >
       <Motion.div
         animate={{ y: [0, 15, 0] }}
@@ -29,11 +29,11 @@ function ElegantShape({
           ease: "easeInOut",
         }}
         style={{ width, height }}
-        className="relative"
+        className="relative pointer-events-none" // ✅ FIX
       >
         <div
           className={cn(
-            "absolute inset-0 rounded-full",
+            "absolute inset-0 rounded-full pointer-events-none", // ✅ FIX
             "bg-linear-to-r to-transparent",
             gradient,
             "backdrop-blur-[2px] border border-white/20",
@@ -47,9 +47,8 @@ function ElegantShape({
 
 export default function HeroBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden z-0">
-      {/* ✅ FIXED HERE */}
-
+    <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+      
       <ElegantShape
         delay={0.3}
         width={600}
@@ -85,7 +84,6 @@ export default function HeroBackground() {
         gradient="from-yellow-500/20"
         className="right-[20%] top-[15%]"
       />
-
     </div>
   );
 }
