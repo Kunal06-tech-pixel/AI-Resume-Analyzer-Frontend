@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/axios";
+
+// ✅ NEW (react-pdf)
+import { pdf } from "@react-pdf/renderer";
+import ResumePDF from "../components/pdf/ResumePDF";
 
 import Stepper from "../components/builder/Stepper";
 import ResumePreview from "../components/builder/ResumePreview";
@@ -15,7 +18,6 @@ import NavButton3D from "../components/NavButton3D";
 import LogoutButton from "../components/LogoutButton";
 import { useAuth } from "../context/AuthContext";
 
-// ICONS
 import { BarChart3, FileText } from "lucide-react";
 
 const Builder = () => {
@@ -27,22 +29,12 @@ const Builder = () => {
   const [resumeData, setResumeData] = useState({
     personal: {
       name: "",
-      title: "",
       email: "",
       phone: "",
       location: "",
+      linkedin: "",
+      portfolio: "",
     },
-
-    experience: [
-      {
-        jobTitle: "",
-        company: "",
-        start: "",
-        end: "",
-        responsibilities: "",
-      },
-    ],
-
     education: [
       {
         school: "",
@@ -53,22 +45,28 @@ const Builder = () => {
         gpa: "",
       },
     ],
-
-    // ✅ NEW PROJECTS SUPPORT
+    experience: [
+      {
+        jobTitle: "",
+        company: "",
+        start: "",
+        end: "",
+        responsibilities: "",
+      },
+    ],
     projects: [
       {
         title: "",
         techStack: "",
-        duration: "",
         description: "",
         github: "",
-        liveLink: "",
+        live: "",
       },
     ],
-
     skills: {
       technical: [],
       soft: [],
+      certifications: [],
     },
   });
 
@@ -80,102 +78,40 @@ const Builder = () => {
     if (currentStep > 1) setCurrentStep((prev) => prev - 1);
   };
 
-  // 🔥 ANALYZE BUILT RESUME
-  const handleAnalyzeResume = async () => {
+  // ================= DOWNLOAD PDF (FIXED - TEXT BASED) =================
+  const handleDownloadPDF = async () => {
     try {
-      const resumeText = `
-${resumeData.personal.name}
-${resumeData.personal.title}
-${resumeData.personal.email}
-${resumeData.personal.phone}
-${resumeData.personal.location}
+      const blob = await pdf(
+        <ResumePDF data={resumeData} />
+      ).toBlob();
 
-EXPERIENCE:
-${resumeData.experience
-  .map(
-    (exp) =>
-      `${exp.jobTitle} at ${exp.company} (${exp.start} - ${exp.end}). ${exp.responsibilities}`
-  )
-  .join(" ")}
+      const url = URL.createObjectURL(blob);
 
-EDUCATION:
-${resumeData.education
-  .map(
-    (edu) =>
-      `${edu.degree} in ${edu.field} from ${edu.school} (${edu.start} - ${edu.end}) GPA: ${edu.gpa}`
-  )
-  .join(" ")}
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "resume.pdf";
+      link.click();
 
-PROJECTS:
-${resumeData.projects
-  .map(
-    (project) =>
-      `${project.title} built using ${project.techStack}. ${project.description}. GitHub: ${project.github}. Live: ${project.liveLink}`
-  )
-  .join(" ")}
+      URL.revokeObjectURL(url);
 
-SKILLS:
-${resumeData.skills.technical.join(", ")}
-${resumeData.skills.soft.join(", ")}
-      `;
-
-      const res = await api.post("/api/resume/analyze-text", {
-        resumeText,
-      });
-
-      navigate("/dashboard", {
-        state: {
-          analysisResult: res.data.analysis.raw_output,
-        },
-      });
-    } catch (error) {
-      console.error("Builder analyze failed:", error);
-      alert("Resume analysis failed. Please try again.");
+    } catch (err) {
+      console.error("PDF Error:", err);
+      alert("Failed to generate PDF");
     }
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <PersonalInfoForm
-            data={resumeData}
-            setData={setResumeData}
-          />
-        );
-
+        return <PersonalInfoForm data={resumeData} setData={setResumeData} />;
       case 2:
-        return (
-          <ExperienceForm
-            data={resumeData}
-            setData={setResumeData}
-          />
-        );
-
+        return <EducationForm data={resumeData} setData={setResumeData} />;
       case 3:
-        return (
-          <EducationForm
-            data={resumeData}
-            setData={setResumeData}
-          />
-        );
-
+        return <ExperienceForm data={resumeData} setData={setResumeData} />;
       case 4:
-        return (
-          <ProjectsForm
-            data={resumeData}
-            setData={setResumeData}
-          />
-        );
-
+        return <ProjectsForm data={resumeData} setData={setResumeData} />;
       case 5:
-        return (
-          <SkillsForm
-            data={resumeData}
-            setData={setResumeData}
-          />
-        );
-
+        return <SkillsForm data={resumeData} setData={setResumeData} />;
       default:
         return null;
     }
@@ -186,33 +122,25 @@ ${resumeData.skills.soft.join(", ")}
       <HeroBackground />
 
       <div className="relative z-10">
+
         {/* NAVBAR */}
         <nav className="z-50 w-full flex items-center justify-between px-8 py-4 backdrop-blur-sm bg-white/70 border-b border-gray-200 sticky top-0">
-          <h1
-            onClick={() => navigate("/")}
-            className="text-lg font-semibold cursor-pointer tracking-tight"
-          >
+          <h1 onClick={() => navigate("/")} className="text-lg font-semibold cursor-pointer">
             ATSmind AI
           </h1>
 
           <div className="flex items-center gap-3">
-            <NavButton3D
-              icon={BarChart3}
-              onClick={() => navigate("/dashboard")}
-            >
+            <NavButton3D icon={BarChart3} onClick={() => navigate("/dashboard")}>
               Analyzer
             </NavButton3D>
 
-            <NavButton3D
-              icon={FileText}
-              onClick={() => navigate("/builder")}
-            >
+            <NavButton3D icon={FileText} onClick={() => navigate("/builder")}>
               Builder
             </NavButton3D>
 
             {user && (
               <>
-                <span className="text-sm text-gray-700 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                <span className="text-sm bg-gray-100 px-3 py-1 rounded-full">
                   {user.name}
                 </span>
                 <LogoutButton onClick={logout} />
@@ -221,45 +149,48 @@ ${resumeData.skills.soft.join(", ")}
           </div>
         </nav>
 
-        {/* STEP HEADER */}
-        <div className="max-w-6xl mx-auto pt-8 px-4">
-          <Stepper currentStep={currentStep} />
+        {/* STEPPER */}
+        <div className="max-w-5xl mx-auto pt-8 px-4">
+          <Stepper currentStep={currentStep} setCurrentStep={setCurrentStep} />
         </div>
 
         {/* MAIN */}
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4 pb-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start mt-8 px-4 pb-10">
+
           {/* LEFT */}
           <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-md p-6">
             {renderStep()}
 
             <div className="flex justify-between mt-6">
-              <button
-                onClick={prevStep}
-                disabled={currentStep === 1}
-                className="text-gray-500 hover:text-gray-800 disabled:opacity-40"
-              >
+              <button type="button" onClick={prevStep} disabled={currentStep === 1}>
                 Back
               </button>
 
-              <button
-                onClick={
-                  currentStep === 5
-                    ? handleAnalyzeResume
-                    : nextStep
-                }
-                className="px-5 py-2 rounded-full bg-linear-to-r from-purple-500 to-blue-500 text-white shadow-md hover:scale-105 transition"
-              >
-                {currentStep === 5
-                  ? "Analyze Resume ✨"
-                  : "Next Step →"}
-              </button>
+              {currentStep === 5 ? (
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={handleDownloadPDF}
+                    className="px-5 py-2 rounded-full bg-gray-800 text-white"
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={nextStep}>
+                  Next Step →
+                </button>
+              )}
             </div>
           </div>
 
           {/* RIGHT */}
           <div className="sticky top-24 h-fit">
-            <ResumePreview data={resumeData} />
+            <div id="resume-preview">
+              <ResumePreview data={resumeData} />
+            </div>
           </div>
+
         </div>
       </div>
     </div>
