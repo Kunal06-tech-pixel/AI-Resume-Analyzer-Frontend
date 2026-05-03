@@ -1,12 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-import Login from "./pages/Login";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Analyzer from "./pages/Analyzer";
+import Builder from "./pages/Builder";
 import Dashboard from "./pages/Dashboard";
-import Landing from "./pages/Landing";       // ✅ NEW
-import Builder from "./pages/Builder";       // ✅ NEW
-
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import { useAuth } from "./context/AuthContext";
+import { useAuth } from "./context/useAuth";
 
 function App() {
   const { user } = useAuth();
@@ -14,17 +13,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* 🟢 Landing Page (PUBLIC) */}
         <Route path="/" element={<Landing />} />
 
-        {/* 🔐 Login */}
         <Route
           path="/login"
           element={user ? <Navigate to="/dashboard" replace /> : <Login />}
         />
 
-        {/* 🔒 Analyzer Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -34,7 +29,15 @@ function App() {
           }
         />
 
-        {/* 🔒 Resume Builder */}
+        <Route
+          path="/analyzer"
+          element={
+            <ProtectedRoute>
+              <Analyzer />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/builder"
           element={
@@ -44,9 +47,7 @@ function App() {
           }
         />
 
-        {/* 🔁 Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
-
       </Routes>
     </BrowserRouter>
   );

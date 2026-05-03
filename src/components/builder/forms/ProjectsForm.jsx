@@ -1,5 +1,14 @@
-import React from "react";
 import api from "../../../utils/api";
+import { PrimaryButton } from "../../ui/Buttons";
+import {
+  aiButtonClass,
+  inputClass,
+  labelClass,
+  nestedCardClass,
+  sectionDescriptionClass,
+  sectionTitleClass,
+} from "../../../utils/uiClasses";
+
 const emptyProject = {
   title: "",
   techStack: "",
@@ -35,7 +44,6 @@ const ProjectsForm = ({ data, setData }) => {
     }));
   };
 
-  // ✅ AI SUGGESTION HANDLER
   const handleAISuggestions = async (index) => {
     try {
       const project = data.projects[index];
@@ -50,7 +58,10 @@ const ProjectsForm = ({ data, setData }) => {
         text: project.description,
       });
 
-      const improvedText = res.data.improved.join("\n");
+      const improved = res.data.improved;
+      const improvedText = Array.isArray(improved)
+        ? improved.join("\n")
+        : String(improved || "");
 
       setData((prev) => {
         const updated = [...prev.projects];
@@ -69,74 +80,54 @@ const ProjectsForm = ({ data, setData }) => {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold">
-            Showcase your projects
-          </h2>
-          <p className="text-gray-500 text-sm mt-1">
+          <h2 className={sectionTitleClass}>Showcase your projects</h2>
+          <p className={sectionDescriptionClass}>
             Add portfolio, internship, or academic projects.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={addProject}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white text-sm shadow-md hover:scale-105 transition"
-        >
+        <PrimaryButton onClick={addProject} className="px-4 py-2">
           + Add
-        </button>
+        </PrimaryButton>
       </div>
 
       {projects.map((project, index) => (
-        <div
-          key={index}
-          className="bg-white/60 backdrop-blur-lg rounded-xl border border-gray-100 p-5 shadow-sm space-y-4"
-        >
-          {/* LABEL */}
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-gray-800">
-              Project {index + 1}
-            </h3>
-            <span className="text-xs text-gray-400">
-              Work #{index + 1}
-            </span>
+        <div key={index} className={`${nestedCardClass} space-y-4`}>
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-gray-800">Project {index + 1}</h3>
+            <span className="text-xs text-gray-400">Work #{index + 1}</span>
           </div>
 
-          {/* TITLE */}
           <input
             type="text"
             name="title"
             value={project.title}
             onChange={(e) => handleChange(index, e)}
             placeholder="Project Title"
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+            className={inputClass}
           />
 
-          {/* TECH STACK */}
           <input
             type="text"
             name="techStack"
             value={project.techStack}
             onChange={(e) => handleChange(index, e)}
             placeholder="Tech Stack (React, Node.js, MongoDB...)"
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+            className={inputClass}
           />
 
-          {/* ✅ DESCRIPTION WITH AI */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700">
-                Description
-              </label>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <label className={labelClass}>Description</label>
 
               <button
                 type="button"
                 onClick={() => handleAISuggestions(index)}
-                className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
+                className={aiButtonClass}
               >
-                ✨ AI Suggestions
+                AI Suggestions
               </button>
             </div>
 
@@ -146,28 +137,26 @@ const ProjectsForm = ({ data, setData }) => {
               onChange={(e) => handleChange(index, e)}
               rows="4"
               placeholder="Describe what this project does, your contribution, and impact..."
-              className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none resize-none focus:ring-2 focus:ring-blue-400"
+              className={`${inputClass} resize-none`}
             />
           </div>
 
-          {/* GITHUB */}
           <input
             type="text"
             name="github"
             value={project.github}
             onChange={(e) => handleChange(index, e)}
             placeholder="GitHub Repository Link"
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+            className={inputClass}
           />
 
-          {/* LIVE */}
           <input
             type="text"
             name="live"
             value={project.live}
             onChange={(e) => handleChange(index, e)}
             placeholder="Live Project Link (optional)"
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+            className={inputClass}
           />
         </div>
       ))}

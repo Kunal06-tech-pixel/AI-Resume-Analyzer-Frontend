@@ -1,165 +1,85 @@
-import React, { useEffect, useState } from "react";
+import ScoreRing from "./ScoreRing";
+import { normalizeAnalysis } from "../utils/analysis";
+
+const PillList = ({ items, tone = "green" }) => {
+  const styles = {
+    green: "bg-purple-100 text-purple-700 ring-purple-200",
+    red: "bg-red-50 text-red-600 ring-red-200",
+    slate: "bg-blue-100 text-blue-700 ring-blue-200",
+  };
+
+  if (!items.length) {
+    return <p className="text-sm text-gray-500">No items available.</p>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((item, index) => (
+        <span
+          key={`${item}-${index}`}
+          className={`rounded-full px-3 py-1 text-sm font-medium ring-1 ${styles[tone]}`}
+        >
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+};
 
 const AnalysisResults = ({ data }) => {
+  const analysis = normalizeAnalysis(data);
 
-  if (!data) return null;
-
-  const score = data?.ats_score?.score || 0;
-
-  const [progress, setProgress] = useState(0);
-
-  // ⭐ Animate score
-  useEffect(() => {
-    let start = 0;
-
-    const interval = setInterval(() => {
-      start += 1;
-      if (start >= score) {
-        start = score;
-        clearInterval(interval);
-      }
-      setProgress(start);
-    }, 15);
-
-    return () => clearInterval(interval);
-  }, [score]);
-
-  // ⭐ Dynamic color
-  let strokeColor = "#ef4444";
-
-  if (score >= 71) strokeColor = "#22c55e";
-  else if (score >= 41) strokeColor = "#facc15";
-
-  const radius = 45;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (progress / 100) * circumference;
+  if (!analysis) return null;
 
   return (
     <div className="mt-10 space-y-6">
+      <div className="flex flex-col gap-8 rounded-2xl bg-white/75 p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl md:flex-row md:items-center">
+        <ScoreRing
+          score={analysis.atsScore.score}
+          size={120}
+          strokeWidth={10}
+          label="ATS Score"
+        />
 
-      {/* SCORE + SUMMARY */}
-      <div className="
-        bg-white/80 backdrop-blur-lg shadow-md rounded-xl p-6 flex gap-10 items-center
-        transition-all duration-300
-        hover:-translate-y-1 hover:scale-[1.01]
-        hover:shadow-[0_10px_30px_rgba(168,85,247,0.2)]
-      ">
-
-        {/* CIRCLE */}
-        <div className="flex flex-col items-center">
-
-          <svg width="120" height="120">
-            <circle cx="60" cy="60" r={radius} stroke="#e5e7eb" strokeWidth="10" fill="none" />
-
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              stroke={strokeColor}
-              strokeWidth="10"
-              fill="none"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              strokeLinecap="round"
-              transform="rotate(-90 60 60)"
-            />
-
-            <text
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-xl font-bold fill-gray-800"
-            >
-              {progress}
-            </text>
-          </svg>
-
-          <p className="text-sm mt-2">ATS Score</p>
-        </div>
-
-        {/* SUMMARY */}
         <div>
-          <h3 className="font-bold text-lg">Summary</h3>
-          <p className="text-gray-600 leading-relaxed text-sm">
-            {data?.summary || "No summary available"}
+          <h3 className="text-lg font-bold text-gray-950">Summary</h3>
+          <p className="mt-2 text-sm leading-relaxed text-gray-600">
+            {analysis.summary}
           </p>
         </div>
-
       </div>
 
-      {/* GRID */}
-      <div className="group grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* SKILLS MATCH */}
-        <div className="
-          bg-white/80 backdrop-blur-lg shadow-md rounded-xl p-6
-          transition-all duration-300
-          group-hover:opacity-60 hover:opacity-100
-          hover:-translate-y-1 hover:scale-[1.02]
-          hover:shadow-[0_10px_30px_rgba(34,197,94,0.25)]
-        ">
-          <h3 className="font-bold mb-3 text-green-600">Skills Match</h3>
-
-          <div className="flex flex-wrap gap-2">
-            {data?.skills_match?.map((skill, i) => (
-              <span key={i} className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">
-                {skill}
-              </span>
-            ))}
-          </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="rounded-2xl bg-white/75 p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <h3 className="mb-3 font-bold text-purple-600">Skills Detected</h3>
+          <PillList items={analysis.skillsDetected} />
         </div>
 
-        {/* MISSING KEYWORDS */}
-        <div className="
-          bg-white/80 backdrop-blur-lg shadow-md rounded-xl p-6
-          transition-all duration-300
-          group-hover:opacity-60 hover:opacity-100
-          hover:-translate-y-1 hover:scale-[1.02]
-          hover:shadow-[0_10px_30px_rgba(239,68,68,0.25)]
-        ">
-          <h3 className="font-bold mb-3 text-red-500">Missing Keywords</h3>
-
-          <div className="flex flex-wrap gap-2">
-            {data?.missing_keywords?.map((skill, i) => (
-              <span key={i} className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">
-                {skill}
-              </span>
-            ))}
-          </div>
+        <div className="rounded-2xl bg-white/75 p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+          <h3 className="mb-3 font-bold text-red-500">Missing Skills</h3>
+          <PillList items={analysis.missingSkills} tone="red" />
         </div>
-
       </div>
 
-      {/* EXPERIENCE */}
-      <div className="
-        bg-white/80 backdrop-blur-lg shadow-md rounded-xl p-6
-        transition-all duration-300
-        hover:-translate-y-1 hover:scale-[1.01]
-        hover:shadow-[0_10px_30px_rgba(59,130,246,0.2)]
-      ">
-        <h3 className="font-bold mb-2">Experience</h3>
-        <p className="text-gray-600">
-          {data?.experience_years || "No experience analysis available"}
+      <div className="rounded-2xl bg-white/75 p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <h3 className="mb-2 font-bold text-gray-950">Experience Analysis</h3>
+        <p className="text-sm leading-relaxed text-gray-600">
+          {analysis.experienceAnalysis}
         </p>
       </div>
 
-      {/* SUGGESTIONS */}
-      <div className="
-        bg-white/80 backdrop-blur-lg shadow-md rounded-xl p-6
-        transition-all duration-300
-        hover:-translate-y-1 hover:scale-[1.01]
-        hover:shadow-[0_10px_30px_rgba(99,102,241,0.2)]
-      ">
-        <h3 className="font-bold mb-3">Improvement Suggestions</h3>
-
-        <ol className="list-decimal pl-5 text-gray-600">
-          {data?.suggestions?.map((s, i) => (
-            <li key={i}>{s}</li>
-          ))}
+      <div className="rounded-2xl bg-white/75 p-6 shadow-md backdrop-blur-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <h3 className="mb-3 font-bold text-gray-950">Improvement Suggestions</h3>
+        <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-gray-600 marker:text-purple-500">
+          {analysis.suggestions.length ? (
+            analysis.suggestions.map((suggestion, index) => (
+              <li key={`${suggestion}-${index}`}>{suggestion}</li>
+            ))
+          ) : (
+            <li>No suggestions available.</li>
+          )}
         </ol>
       </div>
-
     </div>
   );
 };

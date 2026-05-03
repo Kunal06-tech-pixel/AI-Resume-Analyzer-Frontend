@@ -1,20 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/axios";
-
-const AuthContext = createContext();
+import { AuthContext } from "./AuthContextBase";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Auto-login using HttpOnly cookie
   useEffect(() => {
     api
       .get("/api/user/profile")
       .then((res) => {
-        console.log("PROFILE RESPONSE:", res.data); // 🔍 DEBUG
-
-        // ✅ STORE FULL USER OBJECT
         setUser(res.data);
       })
       .catch(() => {
@@ -23,7 +18,6 @@ export const AuthProvider = ({ children }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  // 🚪 LOGOUT (cookie-based)
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");
@@ -40,6 +34,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-// 🔐 Hook
-export const useAuth = () => useContext(AuthContext);

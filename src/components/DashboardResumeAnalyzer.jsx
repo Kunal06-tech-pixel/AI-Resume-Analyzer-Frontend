@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import AnalysisResults from "./AnalysisResults";
+import api from "../services/axios";
+import GlassCard from "./ui/GlassCard";
+import { PrimaryButton } from "./ui/Buttons";
+import { inputClass, smallLabelClass } from "../utils/uiClasses";
 
 export default function DashboardResumeAnalyzer({
   preloadedResult = null,
@@ -24,8 +28,17 @@ export default function DashboardResumeAnalyzer({
     const file = e.target.files[0];
 
     if (file) {
+      const isPdf =
+        file.type === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf");
+
+      if (!isPdf) {
+        alert("Please upload a PDF resume");
+        e.target.value = null;
+        return;
+      }
+
       setResumeFile(file);
-      console.log("File selected:", file.name);
     }
 
     e.target.value = null;
@@ -42,6 +55,7 @@ export default function DashboardResumeAnalyzer({
     }
 
     setLoading(true);
+    setAnalysisResult(null);
 
     const formData = new FormData();
     formData.append("resume", resumeFile);
@@ -50,22 +64,11 @@ export default function DashboardResumeAnalyzer({
     formData.append("jobDescription", jobDescription);
 
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/resume/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-
-      console.log("SERVER RESPONSE:", data);
-
-      setAnalysisResult(data.analysis.raw_output);
+      const res = await api.post("/api/resume/upload", formData);
+      setAnalysisResult(res.data.analysis);
     } catch (error) {
       console.error(error);
-      alert("Upload failed");
+      alert(error.response?.data?.message || "Upload failed");
     }
 
     setLoading(false);
@@ -90,51 +93,51 @@ export default function DashboardResumeAnalyzer({
   }, [analysisResult, loading]);
 
   return (
-    <div className="flex flex-col items-center mt-10 px-4">
+    <div className="mt-10 flex flex-col items-center px-4">
 
       {/* HERO */}
-      <h1 className="text-4xl font-bold leading-tight">
+      <h1 className="text-center text-4xl font-bold leading-tight text-gray-950">
         Smart feedback for your
-        <span className="block bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 bg-clip-text text-transparent text-center">
+        <span className="block bg-linear-to-r from-purple-500 via-pink-500 to-blue-500 bg-clip-text text-center text-transparent">
           DREAM JOB
         </span>
       </h1>
 
-      <p className="mt-4 max-w-xl text-sm text-gray-500">
+      <p className="mt-4 max-w-xl text-center text-sm leading-relaxed text-gray-500">
         Drop your resume to get an ATS score, detailed insights, and
         improvement suggestions tailored to your job role.
       </p>
 
       {/* FORM */}
-      <div className="flex justify-center px-4 py-14 w-full">
-        <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl p-10 space-y-5">
+      <div className="flex w-full justify-center px-4 py-14">
+        <GlassCard className="w-full max-w-xl space-y-5 p-10">
 
           <div>
-            <label className="text-xs text-gray-500">
+            <label className={smallLabelClass}>
               Company Name
             </label>
             <input
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              className={`mt-1 ${inputClass}`}
               placeholder="Company name"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-500">
+            <label className={smallLabelClass}>
               Job Title
             </label>
             <input
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              className={`mt-1 ${inputClass}`}
               placeholder="Job title"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-500">
+            <label className={smallLabelClass}>
               Job Description
             </label>
             <textarea
@@ -142,22 +145,22 @@ export default function DashboardResumeAnalyzer({
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Write a clear & concise job description..."
-              className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+              className={`mt-1 resize-none ${inputClass}`}
             />
           </div>
 
           {/* UPLOAD */}
           <div>
-            <label className="text-xs text-gray-500">
+            <label className={smallLabelClass}>
               Upload Resume
             </label>
 
             <div className="mt-2 flex flex-col items-center">
 
-              <label className="flex h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-pink-300 bg-white text-center cursor-pointer hover:border-pink-400 transition">
+              <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-purple-300 bg-white/70 text-center transition hover:border-purple-400 hover:bg-white/90">
 
                 {resumeFile ? (
-                  <p className="text-sm font-medium text-green-600">
+                  <p className="text-sm font-medium text-purple-700">
                     {resumeFile.name}
                   </p>
                 ) : (
@@ -166,14 +169,14 @@ export default function DashboardResumeAnalyzer({
                       Click to upload or drag and drop
                     </p>
                     <p className="text-xs text-gray-400">
-                      PDF, DOCX, PNG or JPG (max. 10MB)
+                      PDF only (max. 10MB)
                     </p>
                   </>
                 )}
 
                 <input
                   type="file"
-                  accept=".pdf,.doc,.docx,.png,.jpg"
+                  accept=".pdf,application/pdf"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -183,7 +186,7 @@ export default function DashboardResumeAnalyzer({
                 <button
                   type="button"
                   onClick={handleClearFile}
-                  className="mt-2 text-xs text-red-500 hover:underline"
+                  className="mt-2 text-xs font-medium text-purple-600 hover:underline"
                 >
                   Remove file
                 </button>
@@ -192,21 +195,21 @@ export default function DashboardResumeAnalyzer({
           </div>
 
           {/* BUTTON */}
-          <button
+          <PrimaryButton
             onClick={handleSubmit}
-            className="mt-2 w-full rounded-full bg-linear-to-r from-purple-500 via-pink-500 to-purple-600 py-3 text-white font-semibold shadow-lg hover:opacity-90 transition"
+            className="mt-2 w-full"
           >
             Save & Analyze Resume
-          </button>
-        </div>
+          </PrimaryButton>
+        </GlassCard>
       </div>
 
       {/* LOADING */}
       {loading && (
         <div ref={loaderRef} className="mt-10 w-full max-w-5xl">
 
-          <div className="bg-white rounded-xl shadow-md p-10 flex flex-col items-center gap-6 animate-pulse">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="flex animate-pulse flex-col items-center gap-6 rounded-2xl bg-white/75 p-10 shadow-md backdrop-blur-lg">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></div>
             <p className="text-gray-500 text-sm">
               Analyzing your resume...
             </p>

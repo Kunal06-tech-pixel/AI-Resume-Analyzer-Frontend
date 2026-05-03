@@ -1,76 +1,236 @@
-import { useAuth } from "../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import DashboardResumeAnalyzer from "../components/DashboardResumeAnalyzer";
-import LogoutButton from "../components/LogoutButton";
-import NavButton3D from "../components/NavButton3D";
-import HeroBackground from "../components/HeroBackground";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AlertCircle,
+  ChevronRight,
+  Clock3,
+  FileText,
+  Loader2,
+  Search,
+} from "lucide-react";
+import AnalysisDetailModal from "../components/AnalysisDetailModal";
+import ScoreRing from "../components/ScoreRing";
+import PageShell from "../components/ui/PageShell";
+import { PrimaryButton } from "../components/ui/Buttons";
+import api from "../services/axios";
+import { useAuth } from "../context/useAuth";
+import {
+  compactFileName,
+  formatRelativeTime,
+  normalizeAnalysis,
+} from "../utils/analysis";
 
-// ICONS
-import { BarChart3, FileText } from "lucide-react";
+const AnalysisRow = ({ analysis, loading, onOpen }) => {
+  const normalized = normalizeAnalysis(analysis);
+  if (!normalized) return null;
 
-const Dashboard = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // 🔥 BUILDER ANALYSIS RESULT
-  const builderAnalysis = location.state?.analysisResult || null;
+  const skills = normalized.skillsDetected.length
+    ? normalized.skillsDetected
+    : normalized.skillsMatch;
+  const visibleSkills = skills.slice(0, 5);
+  const remainingSkills = Math.max(0, skills.length - visibleSkills.length);
 
   return (
-    <div className="relative min-h-screen bg-linear-to-br from-blue-50 via-white to-pink-100">
+    <button
+      type="button"
+      onClick={() => onOpen(normalized)}
+      className="group grid w-full grid-cols-[56px_1fr_18px] items-center gap-4 rounded-2xl bg-white/75 p-4 text-left shadow-md backdrop-blur-lg transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-xl"
+    >
+      <ScoreRing
+        score={normalized.atsScore.score}
+        size={54}
+        strokeWidth={4}
+        animated={false}
+      />
 
-      {/* 🔥 CAPSULE BACKGROUND (SAME AS LANDING) */}
-      <HeroBackground />
+      <div className="min-w-0">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <h3 className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-gray-900">
+            <FileText size={14} className="shrink-0 text-purple-600" />
+            <span className="truncate">{compactFileName(normalized.fileName)}</span>
+          </h3>
+          <span className="text-xs text-gray-400">
+            {formatRelativeTime(normalized.createdAt)}
+          </span>
+          <span className="text-xs font-medium text-purple-600">
+            ATS {normalized.atsScore.score}%
+          </span>
+        </div>
 
-      {/* CONTENT WRAPPER */}
-      <div className="relative z-10">
-
-        {/* NAVBAR */}
-        <nav className="z-50 w-full flex items-center justify-between px-8 py-4 backdrop-blur-md bg-white/70 border-b border-gray-200 sticky top-0">
-
-          {/* LEFT */}
-          <h1
-            onClick={() => navigate("/")}
-            className="text-lg font-semibold cursor-pointer tracking-tight"
-          >
-            ATSmind AI
-          </h1>
-
-          {/* RIGHT */}
-          <div className="flex items-center gap-3">
-
-            <NavButton3D
-              icon={BarChart3}
-              onClick={() => navigate("/dashboard")}
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {visibleSkills.map((skill, index) => (
+            <span
+              key={`${skill}-${index}`}
+              className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium text-purple-700"
             >
-              Analyzer
-            </NavButton3D>
+              {skill}
+            </span>
+          ))}
+          {remainingSkills > 0 && (
+            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+              +{remainingSkills}
+            </span>
+          )}
+        </div>
 
-            <NavButton3D
-              icon={FileText}
-              onClick={() => navigate("/builder")}
-            >
-              Builder
-            </NavButton3D>
-
-            {/* USER NAME */}
-            {user && (
-              <span className="text-sm text-gray-700 font-medium bg-gray-100 px-3 py-1 rounded-full">
-                {user.name}
-              </span>
-            )}
-
-            {/* LOGOUT BUTTON */}
-            <LogoutButton onClick={logout} />
-
-          </div>
-        </nav>
-
-        {/* 🔥 MAIN (NOW SUPPORTS BUILDER FLOW) */}
-        <DashboardResumeAnalyzer preloadedResult={builderAnalysis} />
-
+        <p className="mt-2 line-clamp-1 text-xs leading-relaxed text-gray-500">
+          {normalized.summary}
+        </p>
       </div>
-    </div>
+
+      {loading ? (
+        <Loader2 size={16} className="animate-spin text-purple-400" />
+      ) : (
+        <ChevronRight
+          size={18}
+          className="text-purple-300 transition group-hover:translate-x-0.5 group-hover:text-purple-600"
+        />
+      )}
+    </button>
+  );
+};
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [analyses, setAnalyses] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+  const [openingId, setOpeningId] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadAnalyses = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const res = await api.get("/api/resume/analyses");
+
+        if (!active) return;
+
+        const loadedAnalyses = res.data.analyses || [];
+        setAnalyses(loadedAnalyses);
+        setTotal(res.data.total ?? loadedAnalyses.length);
+      } catch (err) {
+        if (!active) return;
+        console.error("Load analyses error:", err);
+        setError("Could not load your recent analyses.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadAnalyses();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const openAnalysis = async (analysis) => {
+    if (!analysis?.id) return;
+
+    setOpeningId(analysis.id);
+    setError("");
+
+    try {
+      const res = await api.get(`/api/resume/analyses/${analysis.id}`);
+      setSelectedAnalysis(res.data.analysis);
+    } catch (err) {
+      console.error("Open analysis error:", err);
+      setError("Could not open this analysis.");
+    } finally {
+      setOpeningId(null);
+    }
+  };
+
+  const firstName = user?.name?.split(" ")?.[0];
+
+  return (
+    <PageShell className="mx-auto w-full max-w-3xl px-4 pb-20 pt-8 sm:px-6">
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-950 sm:text-3xl">
+          Welcome back{firstName ? `, ${firstName}` : ""}
+        </h1>
+        <p className="mt-2 text-sm text-gray-500">
+          You&apos;ve analyzed {total} {total === 1 ? "resume" : "resumes"} so
+          far. Keep improving.
+        </p>
+      </header>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-950">
+            <Clock3 size={16} className="text-purple-500" />
+            Recent Analyses
+          </h2>
+          <span className="text-xs text-gray-500">{total} total</span>
+        </div>
+
+        {error && (
+          <div className="mb-4 flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700 shadow-sm">
+            <AlertCircle size={16} />
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="space-y-3">
+            {[0, 1, 2].map((item) => (
+              <div
+                key={item}
+                className="h-24 animate-pulse rounded-2xl bg-white/70 shadow-md backdrop-blur-lg"
+              />
+            ))}
+          </div>
+        ) : analyses.length > 0 ? (
+          <div className="space-y-3">
+            {analyses.map((analysis) => {
+              const normalized = normalizeAnalysis(analysis);
+
+              return (
+                <AnalysisRow
+                  key={normalized?.id || analysis.id}
+                  analysis={analysis}
+                  loading={openingId === normalized?.id}
+                  onOpen={openAnalysis}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-white/75 p-8 text-center shadow-md backdrop-blur-lg">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-r from-purple-200 to-blue-200 text-purple-700">
+              <Search size={22} />
+            </div>
+            <h3 className="mt-4 text-sm font-semibold text-gray-950">
+              No analyses yet
+            </h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-gray-500">
+              Upload a PDF resume in the analyzer to create your first saved
+              report.
+            </p>
+            <PrimaryButton
+              onClick={() => navigate("/analyzer")}
+              className="mt-5"
+            >
+              Analyze Resume
+            </PrimaryButton>
+          </div>
+        )}
+      </section>
+
+      {selectedAnalysis && (
+        <AnalysisDetailModal
+          analysis={selectedAnalysis}
+          onClose={() => setSelectedAnalysis(null)}
+        />
+      )}
+    </PageShell>
   );
 };
 

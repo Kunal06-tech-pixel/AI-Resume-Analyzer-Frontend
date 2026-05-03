@@ -1,18 +1,15 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useLocation } from "react-router-dom";
-
-const inputClass =
-  "w-full h-11 rounded-xl border border-gray-200 px-4 text-gray-700 placeholder:text-gray-400 leading-tight appearance-none focus:outline-none focus:ring-2 focus:ring-primary";
+import { PrimaryButton } from "./ui/Buttons";
+import { inputClass, labelClass } from "../utils/uiClasses";
 
 const AuthCard = () => {
   const location = useLocation();
-
-  const [isLogin, setIsLogin] = useState(true); // default
+  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const { setUser } = useAuth();
 
   const [form, setForm] = useState({
@@ -22,7 +19,6 @@ const AuthCard = () => {
     confirmPassword: "",
   });
 
-  // ✅ HANDLE ROUTE STATE SAFELY (IMPORTANT FIX)
   useEffect(() => {
     if (location.state?.mode === "signup") {
       setIsLogin(false);
@@ -59,9 +55,7 @@ const AuthCard = () => {
           password: form.password,
         });
 
-        // ✅ Switch to login after signup
         setIsLogin(true);
-
         setForm({
           name: "",
           email: "",
@@ -77,33 +71,28 @@ const AuthCard = () => {
   };
 
   return (
-    <div className="w-full max-w-md rounded-3xl bg-white/80 backdrop-blur-md shadow-xl p-8">
-
-      {/* HEADER */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">
+    <div className="w-full max-w-md rounded-2xl bg-white/80 p-8 shadow-xl backdrop-blur-lg">
+      <div className="mb-6 text-center">
+        <h1 className="text-2xl font-semibold text-gray-900">
           {isLogin ? "Welcome Back" : "Create Account"}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="mt-1 text-sm text-gray-500">
           {isLogin
-            ? "Log In to Continue Your Job Journey"
+            ? "Log in to continue your job journey"
             : "Sign up to start your job journey"}
         </p>
       </div>
 
-      {/* ERROR */}
       {error && (
-        <p className="text-center text-sm text-red-500 mb-3">{error}</p>
+        <p className="mb-3 rounded-xl bg-red-50 px-3 py-2 text-center text-sm text-red-500">
+          {error}
+        </p>
       )}
 
-      {/* FORM */}
       <form className="space-y-4" onSubmit={handleSubmit}>
-
         {!isLogin && (
           <div>
-            <label className="text-sm text-gray-600 block mb-1">
-              Full Name
-            </label>
+            <label className={labelClass}>Full Name</label>
             <input
               name="name"
               type="text"
@@ -116,9 +105,7 @@ const AuthCard = () => {
         )}
 
         <div>
-          <label className="text-sm text-gray-600 block mb-1">
-            Email Address
-          </label>
+          <label className={labelClass}>Email Address</label>
           <input
             name="email"
             type="email"
@@ -130,9 +117,7 @@ const AuthCard = () => {
         </div>
 
         <div>
-          <label className="text-sm text-gray-600 block mb-1">
-            Password
-          </label>
+          <label className={labelClass}>Password</label>
           <input
             name="password"
             type="password"
@@ -145,9 +130,7 @@ const AuthCard = () => {
 
         {!isLogin && (
           <div>
-            <label className="text-sm text-gray-600 block mb-1">
-              Confirm Password
-            </label>
+            <label className={labelClass}>Confirm Password</label>
             <input
               name="confirmPassword"
               type="password"
@@ -159,28 +142,21 @@ const AuthCard = () => {
           </div>
         )}
 
-        {/* BUTTON */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full h-11 mt-4 rounded-xl bg-linear-to-r from-indigo-500 to-blue-500 text-white font-medium shadow-md hover:opacity-90 transition"
-        >
+        <PrimaryButton type="submit" disabled={loading} className="mt-4 w-full">
           {loading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
-        </button>
-
+        </PrimaryButton>
       </form>
 
-      {/* TOGGLE */}
-      <p className="text-center text-sm text-gray-500 mt-6">
-        {isLogin ? "Don’t have an account?" : "Already have an account?"}{" "}
-        <span
+      <p className="mt-6 text-center text-sm text-gray-500">
+        {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+        <button
+          type="button"
           onClick={() => setIsLogin(!isLogin)}
-          className="text-primary font-medium cursor-pointer"
+          className="font-medium text-purple-600"
         >
           {isLogin ? "Sign up" : "Log in"}
-        </span>
+        </button>
       </p>
-
     </div>
   );
 };

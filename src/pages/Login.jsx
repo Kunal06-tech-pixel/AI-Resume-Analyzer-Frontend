@@ -1,10 +1,11 @@
 import AuthCard from "../components/AuthCard";
+import PageShell from "../components/ui/PageShell";
 
 const Login = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-pink-100">
+    <PageShell className="flex min-h-[calc(100vh-72px)] items-center justify-center px-4 py-12">
       <AuthCard />
-    </div>
+    </PageShell>
   );
 };
 

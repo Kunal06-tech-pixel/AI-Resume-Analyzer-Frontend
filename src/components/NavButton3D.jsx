@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-const NavButton3D = ({ children, icon: Icon, onClick }) => {
+const NavButton3D = ({ children, icon: Icon, onClick, active = false }) => {
   return (
-    <StyledWrapper>
+    <StyledWrapper $active={active}>
       <button onClick={onClick}>
         {Icon && (
           <span className="icon">
@@ -27,8 +27,11 @@ const StyledWrapper = styled.div`
     border-radius: 999px;
     font-weight: 500;
 
-    color: #4c1d95;
-    background: linear-gradient(135deg, #ede9fe, #dbeafe);
+    color: ${({ $active }) => ($active ? "#4c1d95" : "#5b21b6")};
+    background: ${({ $active }) =>
+      $active
+        ? "linear-gradient(135deg, #ddd6fe, #dbeafe)"
+        : "linear-gradient(135deg, #f1e9ff, #dfeaff)"};
 
     border: none;
     cursor: pointer;
@@ -36,7 +39,7 @@ const StyledWrapper = styled.div`
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.8),
       0 1px 0 rgba(0,0,0,0.05),
-      0 2px 4px rgba(139,92,246,0.15);
+      0 6px 16px rgba(139,92,246,0.16);
 
     transition: all 0.18s ease;
   }
