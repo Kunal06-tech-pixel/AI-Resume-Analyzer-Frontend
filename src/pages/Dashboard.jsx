@@ -8,7 +8,6 @@ import {
   Loader2,
   Search,
 } from "lucide-react";
-import AnalysisDetailModal from "../components/AnalysisDetailModal";
 import ScoreRing from "../components/ScoreRing";
 import PageShell from "../components/ui/PageShell";
 import { PrimaryButton } from "../components/ui/Buttons";
@@ -20,7 +19,7 @@ import {
   normalizeAnalysis,
 } from "../utils/analysis";
 
-const AnalysisRow = ({ analysis, loading, onOpen }) => {
+const AnalysisRow = ({ analysis, onNavigate }) => {
   const normalized = normalizeAnalysis(analysis);
   if (!normalized) return null;
 
@@ -33,7 +32,7 @@ const AnalysisRow = ({ analysis, loading, onOpen }) => {
   return (
     <button
       type="button"
-      onClick={() => onOpen(normalized)}
+      onClick={() => onNavigate(normalized.id)}
       className="group grid w-full grid-cols-[56px_1fr_18px] items-center gap-4 rounded-2xl bg-white/75 p-4 text-left shadow-md backdrop-blur-lg transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-xl"
     >
       <ScoreRing
@@ -78,14 +77,10 @@ const AnalysisRow = ({ analysis, loading, onOpen }) => {
         </p>
       </div>
 
-      {loading ? (
-        <Loader2 size={16} className="animate-spin text-purple-400" />
-      ) : (
-        <ChevronRight
-          size={18}
-          className="text-purple-300 transition group-hover:translate-x-0.5 group-hover:text-purple-600"
-        />
-      )}
+      <ChevronRight
+        size={18}
+        className="text-purple-300 transition group-hover:translate-x-0.5 group-hover:text-purple-600"
+      />
     </button>
   );
 };
@@ -97,8 +92,6 @@ const Dashboard = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedAnalysis, setSelectedAnalysis] = useState(null);
-  const [openingId, setOpeningId] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -131,21 +124,8 @@ const Dashboard = () => {
     };
   }, []);
 
-  const openAnalysis = async (analysis) => {
-    if (!analysis?.id) return;
-
-    setOpeningId(analysis.id);
-    setError("");
-
-    try {
-      const res = await api.get(`/api/resume/analyses/${analysis.id}`);
-      setSelectedAnalysis(res.data.analysis);
-    } catch (err) {
-      console.error("Open analysis error:", err);
-      setError("Could not open this analysis.");
-    } finally {
-      setOpeningId(null);
-    }
+  const handleNavigateToResume = (analysisId) => {
+    navigate(`/resume/${analysisId}`);
   };
 
   const firstName = user?.name?.split(" ")?.[0];
@@ -196,8 +176,7 @@ const Dashboard = () => {
                 <AnalysisRow
                   key={normalized?.id || analysis.id}
                   analysis={analysis}
-                  loading={openingId === normalized?.id}
-                  onOpen={openAnalysis}
+                  onNavigate={handleNavigateToResume}
                 />
               );
             })}
@@ -223,13 +202,6 @@ const Dashboard = () => {
           </div>
         )}
       </section>
-
-      {selectedAnalysis && (
-        <AnalysisDetailModal
-          analysis={selectedAnalysis}
-          onClose={() => setSelectedAnalysis(null)}
-        />
-      )}
     </PageShell>
   );
 };

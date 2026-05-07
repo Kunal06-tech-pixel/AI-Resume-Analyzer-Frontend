@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Analyzer from "./pages/Analyzer";
 import Builder from "./pages/Builder";
 import Dashboard from "./pages/Dashboard";
+import ResumeDetail from "./pages/ResumeDetail";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -25,6 +26,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/resume/:id"
+          element={
+            <ProtectedRoute>
+              <ResumeDetail />
             </ProtectedRoute>
           }
         />

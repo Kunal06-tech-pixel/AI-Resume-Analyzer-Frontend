@@ -1,5 +1,6 @@
 import ScoreRing from "./ScoreRing";
 import { normalizeAnalysis } from "../utils/analysis";
+import FloatingChatButton from "./FloatingChatButton"; // ✅ UPDATED IMPORT
 
 const PillList = ({ items, tone = "green" }) => {
   const styles = {
@@ -80,6 +81,12 @@ const AnalysisResults = ({ data }) => {
           )}
         </ol>
       </div>
+
+      {/* ✅ FLOATING CHAT BUTTON */}
+      <FloatingChatButton 
+        analysisId={analysis.id} 
+        fileName={analysis.fileName}
+      />
     </div>
   );
 };

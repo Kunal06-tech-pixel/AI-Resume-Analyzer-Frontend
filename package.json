@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.177",
     "@react-pdf/renderer": "^4.5.1",
     "@tailwindcss/vite": "^4.2.1",
+    "ai": "^6.0.175",
     "axios": "^1.13.5",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
@@ -21,8 +23,11 @@
     "lucide-react": "^1.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.13.2",
     "react-to-pdf": "^3.2.2",
+    "rehype-highlight": "^7.0.2",
+    "remark-gfm": "^4.0.1",
     "styled-components": "^6.3.12",
     "tailwindcss": "^4.2.1"
   },
