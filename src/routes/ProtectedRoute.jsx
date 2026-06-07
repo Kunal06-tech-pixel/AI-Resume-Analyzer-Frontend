@@ -6,8 +6,10 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Checking session...
+      <div className="glass-theme theme-bg flex min-h-screen items-center justify-center px-4">
+        <div className="glass-panel rounded-lg px-5 py-4 text-sm font-medium text-slate-600">
+          Checking session...
+        </div>
       </div>
     );
   }

@@ -1,18 +1,40 @@
-import { useState, useEffect, useRef } from 'react';
-import axios from '../services/axios';
-import MarkdownMessage from './MarkdownMessage';
-import './ResumeChat.css';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Bot, Loader2, Send, Sparkles, User, X } from "lucide-react";
+import axios from "../services/axios";
+import MarkdownMessage from "./MarkdownMessage";
+import { useToast } from "./ui/useToast";
+import "./ResumeChat.css";
+
+const suggestedQuestions = [
+  "How can I improve my ATS score?",
+  "What are my resume's main weaknesses?",
+  "Which skills should I add?",
+  "How does my experience match the job?",
+  "What makes my resume strong?",
+];
 
 const ResumeChat = ({ analysisId, fileName, isOpen, onClose }) => {
   const [messages, setMessages] = useState([]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [chatId, setChatId] = useState(null);
   const messagesEndRef = useRef(null);
+  const toast = useToast();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const loadChatHistory = useCallback(async () => {
+    try {
+      const response = await axios.get(`/api/chat/${analysisId}/history`);
+      if (response.data.success && response.data.chat) {
+        setMessages(response.data.chat.messages);
+      }
+    } catch (error) {
+      console.error("Failed to load chat history:", error);
+      toast.error("Failed to load chat history.");
+    }
+  }, [analysisId, toast]);
 
   useEffect(() => {
     scrollToBottom();
@@ -22,63 +44,40 @@ const ResumeChat = ({ analysisId, fileName, isOpen, onClose }) => {
     if (analysisId && isOpen) {
       loadChatHistory();
     }
-  }, [analysisId, isOpen]);
+  }, [analysisId, isOpen, loadChatHistory]);
 
-  const loadChatHistory = async () => {
-    try {
-      const response = await axios.get(`/api/chat/${analysisId}/history`);
-      if (response.data.success && response.data.chat) {
-        setMessages(response.data.chat.messages);
-        setChatId(response.data.chat.id);
-      }
-    } catch (error) {
-      console.error('Failed to load chat history:', error);
-    }
-  };
+  const sendMessage = async (event) => {
+    event.preventDefault();
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    
     if (!inputMessage.trim() || isLoading) return;
 
     const userMessage = inputMessage.trim();
-    setInputMessage('');
-
-    // Add user message to UI immediately
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setInputMessage("");
+    setMessages((current) => [...current, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
     try {
       const response = await axios.post(`/api/chat/${analysisId}/message`, {
-        message: userMessage
+        message: userMessage,
       });
 
       if (response.data.success) {
-        // Add assistant response
-        setMessages(prev => [...prev, response.data.message]);
-        setChatId(response.data.chat.id);
+        setMessages((current) => [...current, response.data.message]);
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
-      setMessages(prev => [
-        ...prev,
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message.");
+      setMessages((current) => [
+        ...current,
         {
-          role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.'
-        }
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
+        },
       ]);
     } finally {
       setIsLoading(false);
     }
   };
-
-  const suggestedQuestions = [
-    "How can I improve my ATS score?",
-    "What are my resume's main weaknesses?",
-    "Which skills should I add?",
-    "How does my experience match the job?",
-    "What makes my resume strong?"
-  ];
 
   const handleSuggestedQuestion = (question) => {
     setInputMessage(question);
@@ -88,33 +87,46 @@ const ResumeChat = ({ analysisId, fileName, isOpen, onClose }) => {
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="chat-backdrop" onClick={onClose}></div>
+      <button
+        type="button"
+        className="chat-backdrop"
+        onClick={onClose}
+        aria-label="Close resume chat"
+      />
 
-      {/* Chat Popup */}
       <div className="chat-popup">
         <div className="resume-chat">
           <div className="chat-header">
-            <div>
-              <h3>💬 Chat About Your Resume</h3>
-              <p className="chat-subtitle">{fileName}</p>
+            <div className="chat-title-wrap">
+              <div className="chat-header-icon">
+                <Sparkles size={17} />
+              </div>
+              <div className="min-w-0">
+                <h3>Resume advisor</h3>
+                <p className="chat-subtitle">{fileName}</p>
+              </div>
             </div>
-            <button className="chat-close-btn" onClick={onClose}>
-              ✕
+            <button className="chat-close-btn" onClick={onClose} aria-label="Close chat">
+              <X size={17} />
             </button>
           </div>
 
           <div className="chat-messages">
             {messages.length === 0 ? (
               <div className="chat-welcome">
-                <h4>👋 Hi! I'm your resume advisor</h4>
-                <p>Ask me anything about your resume analysis, ATS score, or how to improve it.</p>
-                
+                <div className="chat-welcome-icon">
+                  <Bot size={22} />
+                </div>
+                <h4>Ask about this analysis</h4>
+                <p>
+                  Get focused guidance on your ATS score, missing skills, and
+                  resume improvements.
+                </p>
+
                 <div className="suggested-questions">
-                  <p className="suggested-label">Try asking:</p>
-                  {suggestedQuestions.map((question, index) => (
+                  {suggestedQuestions.map((question) => (
                     <button
-                      key={index}
+                      key={question}
                       className="suggested-question"
                       onClick={() => handleSuggestedQuestion(question)}
                     >
@@ -125,20 +137,22 @@ const ResumeChat = ({ analysisId, fileName, isOpen, onClose }) => {
               </div>
             ) : (
               <>
-                {messages.map((msg, index) => (
+                {messages.map((message, index) => (
                   <div
-                    key={index}
-                    className={`message ${msg.role === 'user' ? 'user-message' : 'assistant-message'}`}
+                    key={`${message.role}-${index}`}
+                    className={`message ${
+                      message.role === "user" ? "user-message" : "assistant-message"
+                    }`}
                   >
                     <div className="message-avatar">
-                      {msg.role === 'user' ? '👤' : '🤖'}
+                      {message.role === "user" ? <User size={16} /> : <Bot size={16} />}
                     </div>
                     <div className="message-content">
                       <div className="message-text">
-                        {msg.role === 'assistant' ? (
-                          <MarkdownMessage content={msg.content} />
+                        {message.role === "assistant" ? (
+                          <MarkdownMessage content={message.content} />
                         ) : (
-                          msg.content
+                          message.content
                         )}
                       </div>
                     </div>
@@ -146,12 +160,13 @@ const ResumeChat = ({ analysisId, fileName, isOpen, onClose }) => {
                 ))}
                 {isLoading && (
                   <div className="message assistant-message">
-                    <div className="message-avatar">🤖</div>
+                    <div className="message-avatar">
+                      <Bot size={16} />
+                    </div>
                     <div className="message-content">
                       <div className="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                        <Loader2 size={16} className="animate-spin" />
+                        Thinking...
                       </div>
                     </div>
                   </div>
@@ -167,15 +182,16 @@ const ResumeChat = ({ analysisId, fileName, isOpen, onClose }) => {
               className="chat-input"
               placeholder="Ask about your resume..."
               value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={(event) => setInputMessage(event.target.value)}
               disabled={isLoading}
             />
             <button
               type="submit"
               className="chat-send-btn"
               disabled={!inputMessage.trim() || isLoading}
+              aria-label="Send message"
             >
-              {isLoading ? '⏳' : '📤'}
+              {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
             </button>
           </form>
         </div>

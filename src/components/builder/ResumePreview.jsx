@@ -1,5 +1,3 @@
-import React from "react";
-
 const ResumePreview = ({ data }) => {
   const {
     personal = {},
@@ -12,17 +10,15 @@ const ResumePreview = ({ data }) => {
   return (
     <div
       id="resume-preview"
-      className="bg-white shadow-md rounded-xl border border-gray-200 p-8 text-[14px] leading-[1.6] text-gray-900 w-full mx-auto break-words"
+      className="mx-auto w-full break-words rounded-lg border border-slate-200 bg-white p-8 text-[14px] leading-[1.6] text-slate-900 shadow-xl shadow-slate-950/10"
       style={{ transform: "none" }}
     >
-
-      {/* HEADER */}
-      <div className="text-center border-b border-gray-300 pb-4 mb-5">
-        <h1 className="text-3xl font-bold break-words">
+      <div className="mb-5 border-b border-slate-300 pb-4 text-center">
+        <h1 className="break-words text-3xl font-bold tracking-tight">
           {personal.name || "Your Name"}
         </h1>
 
-        <div className="mt-2 text-xs text-gray-700 flex flex-wrap justify-center gap-2 break-all">
+        <div className="mt-2 flex flex-wrap justify-center gap-2 break-all text-xs text-slate-700">
           {personal.email && <span>{personal.email}</span>}
           {personal.phone && <span>| {personal.phone}</span>}
           {personal.location && <span>| {personal.location}</span>}
@@ -57,22 +53,19 @@ const ResumePreview = ({ data }) => {
         </div>
       </div>
 
-      {/* EDUCATION */}
       <section className="mb-5">
-        <h2 className="font-bold text-[18px] uppercase border-b border-gray-400 mb-2">
+        <h2 className="mb-2 border-b border-slate-400 text-[18px] font-bold uppercase">
           Education
         </h2>
 
-        {education.map((edu, i) => (
-          <div key={i} className="mb-3">
-            <div className="flex justify-between font-semibold gap-4">
+        {education.map((edu, index) => (
+          <div key={index} className="mb-3">
+            <div className="flex justify-between gap-4 font-semibold">
               <span className="break-words">{edu.school}</span>
-              <span className="text-xs whitespace-nowrap">
-                {edu.end}
-              </span>
+              <span className="whitespace-nowrap text-xs">{edu.end}</span>
             </div>
 
-            <p className="text-sm break-words">
+            <p className="break-words text-sm">
               {edu.degree}
               {edu.field && `, ${edu.field}`}
             </p>
@@ -82,33 +75,30 @@ const ResumePreview = ({ data }) => {
         ))}
       </section>
 
-      {/* EXPERIENCE */}
       <section className="mb-5">
-        <h2 className="font-bold text-[18px] uppercase border-b border-gray-400 mb-2">
+        <h2 className="mb-2 border-b border-slate-400 text-[18px] font-bold uppercase">
           Work Experience
         </h2>
 
-        {experience.map((exp, i) => (
-          <div key={i} className="mb-4">
-            <div className="flex justify-between font-semibold gap-4">
+        {experience.map((exp, index) => (
+          <div key={index} className="mb-4">
+            <div className="flex justify-between gap-4 font-semibold">
               <span className="break-words">{exp.company}</span>
-              <span className="text-xs whitespace-nowrap">
+              <span className="whitespace-nowrap text-xs">
                 {exp.start} - {exp.end}
               </span>
             </div>
 
-            <p className="italic break-words">{exp.jobTitle}</p>
+            <p className="break-words italic">{exp.jobTitle}</p>
 
             <div className="mt-2 space-y-2">
               {exp.responsibilities
                 ?.split("\n")
                 .filter(Boolean)
-                .map((line, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <span className="mt-1 shrink-0">•</span>
-                    <p className="flex-1 break-words leading-[1.6]">
-                      {line}
-                    </p>
+                .map((line, lineIndex) => (
+                  <div key={lineIndex} className="flex items-start gap-2">
+                    <span className="mt-1 shrink-0">-</span>
+                    <p className="flex-1 break-words leading-[1.6]">{line}</p>
                   </div>
                 ))}
             </div>
@@ -116,15 +106,14 @@ const ResumePreview = ({ data }) => {
         ))}
       </section>
 
-      {/* PROJECTS */}
       <section className="mb-5">
-        <h2 className="font-bold text-[18px] uppercase border-b border-gray-400 mb-2">
+        <h2 className="mb-2 border-b border-slate-400 text-[18px] font-bold uppercase">
           Projects
         </h2>
 
-        {projects.map((project, i) => (
-          <div key={i} className="mb-4">
-            <p className="font-semibold break-words">
+        {projects.map((project, index) => (
+          <div key={index} className="mb-4">
+            <p className="break-words font-semibold">
               {project.title || "Project Title"}
 
               {project.github && (
@@ -132,7 +121,7 @@ const ResumePreview = ({ data }) => {
                   href={project.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="ml-2 text-blue-700 text-sm font-normal hover:underline"
+                  className="ml-2 text-sm font-normal text-blue-700 hover:underline"
                 >
                   | GitHub
                 </a>
@@ -143,7 +132,7 @@ const ResumePreview = ({ data }) => {
                   href={project.live}
                   target="_blank"
                   rel="noreferrer"
-                  className="ml-2 text-green-700 text-sm font-normal hover:underline"
+                  className="ml-2 text-sm font-normal text-green-700 hover:underline"
                 >
                   | Live
                 </a>
@@ -151,9 +140,8 @@ const ResumePreview = ({ data }) => {
             </p>
 
             {project.techStack && (
-              <p className="text-sm break-words">
-                <span className="font-medium">Tech:</span>{" "}
-                {project.techStack}
+              <p className="break-words text-sm">
+                <span className="font-medium">Tech:</span> {project.techStack}
               </p>
             )}
 
@@ -161,12 +149,10 @@ const ResumePreview = ({ data }) => {
               {project.description
                 ?.split("\n")
                 .filter(Boolean)
-                .map((line, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <span className="mt-1 shrink-0">•</span>
-                    <p className="flex-1 break-words leading-[1.6]">
-                      {line}
-                    </p>
+                .map((line, lineIndex) => (
+                  <div key={lineIndex} className="flex items-start gap-2">
+                    <span className="mt-1 shrink-0">-</span>
+                    <p className="flex-1 break-words leading-[1.6]">{line}</p>
                   </div>
                 ))}
             </div>
@@ -174,34 +160,32 @@ const ResumePreview = ({ data }) => {
         ))}
       </section>
 
-      {/* SKILLS */}
       <section className="mb-5">
-        <h2 className="font-bold text-[18px] uppercase border-b border-gray-400 mb-2">
+        <h2 className="mb-2 border-b border-slate-400 text-[18px] font-bold uppercase">
           Skills
         </h2>
 
         <p>
           <span className="font-semibold">Technical:</span>{" "}
-          {skills.technical.join(", ") || "—"}
+          {skills.technical.join(", ") || "-"}
         </p>
 
         <p>
           <span className="font-semibold">Soft Skills:</span>{" "}
-          {skills.soft.join(", ") || "—"}
+          {skills.soft.join(", ") || "-"}
         </p>
       </section>
 
-      {/* CERTIFICATIONS */}
       {skills.certifications?.length > 0 && (
         <section>
-          <h2 className="font-bold text-[18px] uppercase border-b border-gray-400 mb-2">
+          <h2 className="mb-2 border-b border-slate-400 text-[18px] font-bold uppercase">
             Certifications
           </h2>
 
           <div className="space-y-2">
-            {skills.certifications.map((cert, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <span className="mt-1 shrink-0">•</span>
+            {skills.certifications.map((cert, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <span className="mt-1 shrink-0">-</span>
 
                 <p className="flex-1 break-words">
                   {typeof cert === "string" ? (

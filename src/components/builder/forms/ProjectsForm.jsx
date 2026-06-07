@@ -1,5 +1,7 @@
 import api from "../../../utils/api";
 import { PrimaryButton } from "../../ui/Buttons";
+import { Plus, Sparkles } from "lucide-react";
+import { useToast } from "../../ui/useToast";
 import {
   aiButtonClass,
   inputClass,
@@ -19,6 +21,7 @@ const emptyProject = {
 
 const ProjectsForm = ({ data, setData }) => {
   const projects = data.projects || [emptyProject];
+  const toast = useToast();
 
   const handleChange = (index, e) => {
     const { name, value } = e.target;
@@ -49,7 +52,7 @@ const ProjectsForm = ({ data, setData }) => {
       const project = data.projects[index];
 
       if (!project.description) {
-        alert("Please write some description first");
+        toast.error("Please write some description first");
         return;
       }
 
@@ -74,7 +77,7 @@ const ProjectsForm = ({ data, setData }) => {
       });
     } catch (err) {
       console.error("AI error:", err);
-      alert("AI suggestions failed");
+      toast.error("AI suggestions failed");
     }
   };
 
@@ -88,16 +91,17 @@ const ProjectsForm = ({ data, setData }) => {
           </p>
         </div>
 
-        <PrimaryButton onClick={addProject} className="px-4 py-2">
-          + Add
+        <PrimaryButton onClick={addProject} className="px-3 py-2">
+          <Plus size={15} />
+          Add
         </PrimaryButton>
       </div>
 
       {projects.map((project, index) => (
         <div key={index} className={`${nestedCardClass} space-y-4`}>
           <div className="flex items-center justify-between">
-            <h3 className="font-medium text-gray-800">Project {index + 1}</h3>
-            <span className="text-xs text-gray-400">Work #{index + 1}</span>
+            <h3 className="font-medium text-slate-800">Project {index + 1}</h3>
+            <span className="text-xs text-slate-400">Work #{index + 1}</span>
           </div>
 
           <input
@@ -127,6 +131,7 @@ const ProjectsForm = ({ data, setData }) => {
                 onClick={() => handleAISuggestions(index)}
                 className={aiButtonClass}
               >
+                <Sparkles size={13} />
                 AI Suggestions
               </button>
             </div>

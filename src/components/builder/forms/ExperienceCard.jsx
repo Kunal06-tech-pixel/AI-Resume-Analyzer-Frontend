@@ -1,4 +1,6 @@
 import api from "../../../utils/api";
+import { Sparkles } from "lucide-react";
+import { useToast } from "../../ui/useToast";
 import {
   aiButtonClass,
   aiTipClass,
@@ -8,6 +10,8 @@ import {
 } from "../../../utils/uiClasses";
 
 const ExperienceCard = ({ exp, index, setData }) => {
+  const toast = useToast();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -28,7 +32,7 @@ const ExperienceCard = ({ exp, index, setData }) => {
   const handleAISuggestions = async () => {
     try {
       if (!exp.responsibilities || !exp.responsibilities.trim()) {
-        alert("Please enter some responsibilities first");
+        toast.error("Please enter some responsibilities first");
         return;
       }
 
@@ -40,7 +44,7 @@ const ExperienceCard = ({ exp, index, setData }) => {
       let output = res?.data?.improved;
 
       if (!output) {
-        alert("AI returned empty response");
+        toast.error("AI returned empty response");
         return;
       }
 
@@ -53,7 +57,7 @@ const ExperienceCard = ({ exp, index, setData }) => {
           .filter(Boolean)
           .join("\n");
       } else {
-        alert("Unexpected AI response format");
+        toast.error("Unexpected AI response format");
         return;
       }
 
@@ -68,15 +72,15 @@ const ExperienceCard = ({ exp, index, setData }) => {
       });
     } catch (err) {
       console.error("AI ERROR FULL:", err);
-      alert("AI suggestion failed");
+      toast.error("AI suggestion failed");
     }
   };
 
   return (
     <div className={`${nestedCardClass} space-y-4`}>
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-800">Experience {index + 1}</h3>
-        <span className="text-xs text-gray-400">Role #{index + 1}</span>
+        <h3 className="font-semibold text-slate-800">Experience {index + 1}</h3>
+        <span className="text-xs text-slate-400">Role #{index + 1}</span>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -123,11 +127,12 @@ const ExperienceCard = ({ exp, index, setData }) => {
 
           <button
             type="button"
-            onClick={handleAISuggestions}
-            className={aiButtonClass}
-          >
-            AI Suggestions
-          </button>
+          onClick={handleAISuggestions}
+          className={aiButtonClass}
+        >
+          <Sparkles size={13} />
+          AI Suggestions
+        </button>
         </div>
 
         <textarea

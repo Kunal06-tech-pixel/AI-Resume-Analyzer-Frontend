@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { pdf } from "@react-pdf/renderer";
+import { Download } from "lucide-react";
 import ResumePDF from "../components/pdf/ResumePDF";
 import Stepper from "../components/builder/Stepper";
 import ResumePreview from "../components/builder/ResumePreview";
@@ -8,12 +9,14 @@ import ExperienceForm from "../components/builder/forms/ExperienceForm";
 import EducationForm from "../components/builder/forms/EducationForm";
 import ProjectsForm from "../components/builder/forms/ProjectsForm";
 import SkillsForm from "../components/builder/forms/SkillsForm";
-import PageShell from "../components/ui/PageShell";
+import AppShell from "../components/ui/AppShell";
 import GlassCard from "../components/ui/GlassCard";
 import { PrimaryButton, SecondaryButton } from "../components/ui/Buttons";
+import { useToast } from "../components/ui/useToast";
 
 const Builder = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const toast = useToast();
 
   const [resumeData, setResumeData] = useState({
     personal: {
@@ -78,9 +81,10 @@ const Builder = () => {
       link.click();
 
       URL.revokeObjectURL(url);
+      toast.success("Your resume PDF has been generated.");
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("Failed to generate PDF");
+      toast.error("Failed to generate PDF");
     }
   };
 
@@ -102,43 +106,66 @@ const Builder = () => {
   };
 
   return (
-    <PageShell>
-      <div className="mx-auto max-w-5xl px-4 pt-8">
+    <AppShell
+      title="Resume builder"
+      description="Build a clean PDF resume from guided sections."
+      actions={
+        <PrimaryButton onClick={handleDownloadPDF} className="hidden sm:inline-flex">
+          <Download size={16} />
+          Export PDF
+        </PrimaryButton>
+      }
+    >
+      <div className="mx-auto max-w-7xl space-y-6">
         <Stepper currentStep={currentStep} setCurrentStep={setCurrentStep} />
-      </div>
 
-      <div className="mx-auto mt-8 grid max-w-6xl grid-cols-1 items-start gap-8 px-4 pb-10 md:grid-cols-2">
-        <GlassCard>
-          {renderStep()}
+        <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(28rem,1.08fr)]">
+          <GlassCard className="p-5 sm:p-6">
+            {renderStep()}
 
-          <div className="mt-6 flex justify-between gap-3">
-            <SecondaryButton
-              type="button"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-            >
-              Back
-            </SecondaryButton>
+            <div className="mt-6 flex justify-between gap-3 border-t border-slate-200 pt-5">
+              <SecondaryButton
+                type="button"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+              >
+                Back
+              </SecondaryButton>
 
-            {currentStep === 5 ? (
-              <PrimaryButton type="button" onClick={handleDownloadPDF}>
-                Download PDF
-              </PrimaryButton>
-            ) : (
-              <PrimaryButton type="button" onClick={nextStep}>
-                Next Step {"->"}
-              </PrimaryButton>
-            )}
-          </div>
-        </GlassCard>
+              {currentStep === 5 ? (
+                <PrimaryButton type="button" onClick={handleDownloadPDF}>
+                  <Download size={16} />
+                  Download PDF
+                </PrimaryButton>
+              ) : (
+                <PrimaryButton type="button" onClick={nextStep}>
+                  Next Step
+                </PrimaryButton>
+              )}
+            </div>
+          </GlassCard>
 
-        <div className="sticky top-24 h-fit">
-          <div id="resume-preview">
-            <ResumePreview data={resumeData} />
-          </div>
+          <aside className="sticky top-24 h-fit">
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  Live preview
+                </p>
+                <h2 className="mt-1 text-lg font-semibold tracking-tight text-slate-950">
+                  Resume document
+                </h2>
+              </div>
+              <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-500">
+                PDF
+              </span>
+            </div>
+            <div id="resume-preview">
+              <ResumePreview data={resumeData} />
+            </div>
+          </aside>
         </div>
       </div>
-    </PageShell>
+    </AppShell>
   );
 };
 

@@ -1,4 +1,5 @@
 import { PrimaryButton } from "../../ui/Buttons";
+import { Plus } from "lucide-react";
 import {
   inputClass,
   nestedCardClass,
@@ -52,16 +53,17 @@ const EducationForm = ({ data, setData }) => {
           </p>
         </div>
 
-        <PrimaryButton onClick={addEducation} className="px-4 py-2">
-          + Add
+        <PrimaryButton onClick={addEducation} className="px-3 py-2">
+          <Plus size={15} />
+          Add
         </PrimaryButton>
       </div>
 
       {educationList.map((education, index) => (
         <div key={index} className={`${nestedCardClass} space-y-4`}>
           <div className="flex items-center justify-between">
-            <h3 className="font-medium text-gray-800">Education {index + 1}</h3>
-            <span className="text-xs text-gray-400">Degree #{index + 1}</span>
+            <h3 className="font-medium text-slate-800">Education {index + 1}</h3>
+            <span className="text-xs text-slate-400">Degree #{index + 1}</span>
           </div>
 
           <input

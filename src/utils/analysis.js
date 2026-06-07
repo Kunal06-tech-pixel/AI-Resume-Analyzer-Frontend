@@ -77,7 +77,7 @@ export const normalizeAnalysis = (analysis) => {
 };
 
 export const scoreColor = (score) => {
-  if (score >= 71) return "#2fbf7a";
+  if (score >= 71) return "#18c8a8";
   if (score >= 41) return "#f2a51a";
   return "#ef4444";
 };

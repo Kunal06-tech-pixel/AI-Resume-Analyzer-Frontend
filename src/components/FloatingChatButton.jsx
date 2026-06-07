@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import ResumeChat from './ResumeChat';
-import './ResumeChat.css';
+import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import ResumeChat from "./ResumeChat";
+import "./ResumeChat.css";
 
 const FloatingChatButton = ({ analysisId, fileName }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -9,16 +10,15 @@ const FloatingChatButton = ({ analysisId, fileName }) => {
 
   return (
     <>
-      {/* Floating Chat Button */}
       <button
         className="floating-chat-btn"
         onClick={() => setIsChatOpen(true)}
         title="Chat about your resume"
+        aria-label="Chat about your resume"
       >
-        💬
+        <MessageCircle size={22} />
       </button>
 
-      {/* Chat Popup */}
       <ResumeChat
         analysisId={analysisId}
         fileName={fileName}

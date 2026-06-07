@@ -1,5 +1,6 @@
 import ExperienceCard from "./ExperienceCard";
 import { PrimaryButton } from "../../ui/Buttons";
+import { Plus } from "lucide-react";
 import {
   sectionDescriptionClass,
   sectionTitleClass,
@@ -32,8 +33,9 @@ const ExperienceForm = ({ data, setData }) => {
           </p>
         </div>
 
-        <PrimaryButton onClick={addExperience} className="px-4 py-2">
-          + Add
+        <PrimaryButton onClick={addExperience} className="px-3 py-2">
+          <Plus size={15} />
+          Add
         </PrimaryButton>
       </div>
 

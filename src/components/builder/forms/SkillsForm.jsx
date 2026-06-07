@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Plus, X } from "lucide-react";
 import {
   aiTipClass,
   inputClass,
@@ -64,8 +65,13 @@ const SkillsForm = ({ data, setData }) => {
   const renderSkillPill = (skill, index, type) => (
     <span key={`${skill}-${index}`} className={`${pillClass} flex items-center gap-1`}>
       {skill}
-      <button type="button" onClick={() => removeSkill(type, index)}>
-        x
+      <button
+        type="button"
+        onClick={() => removeSkill(type, index)}
+        className="rounded-sm text-slate-400 transition hover:text-red-600"
+        aria-label={`Remove ${skill}`}
+      >
+        <X size={12} />
       </button>
     </span>
   );
@@ -81,7 +87,7 @@ const SkillsForm = ({ data, setData }) => {
 
       <div className={`${nestedCardClass} space-y-6`}>
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-700">
+          <p className="mb-2 text-sm font-medium text-slate-700">
             Technical Skills
           </p>
 
@@ -107,7 +113,7 @@ const SkillsForm = ({ data, setData }) => {
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-700">Soft Skills</p>
+          <p className="mb-2 text-sm font-medium text-slate-700">Soft Skills</p>
 
           <input
             value={softInput}
@@ -131,7 +137,7 @@ const SkillsForm = ({ data, setData }) => {
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-700">
+          <p className="mb-2 text-sm font-medium text-slate-700">
             Certifications
           </p>
 
@@ -152,16 +158,17 @@ const SkillsForm = ({ data, setData }) => {
           <button
             type="button"
             onClick={addCertification}
-            className="mt-3 rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-700 transition hover:bg-purple-200"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
           >
-            + Add Certification
+            <Plus size={13} />
+            Add Certification
           </button>
 
           <div className="mt-3 flex flex-col gap-2">
             {skills.certifications.map((cert, index) => (
               <div
                 key={`${typeof cert === "string" ? cert : cert.name}-${index}`}
-                className="flex items-center justify-between rounded-xl bg-purple-100 px-3 py-2 text-xs text-purple-700"
+                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
               >
                 <span className="truncate">
                   {typeof cert === "string" ? cert : cert.name}
@@ -170,9 +177,10 @@ const SkillsForm = ({ data, setData }) => {
                 <button
                   type="button"
                   onClick={() => removeSkill("certifications", index)}
-                  className="ml-2"
+                  className="ml-2 rounded-sm text-slate-400 transition hover:text-red-600"
+                  aria-label="Remove certification"
                 >
-                  x
+                  <X size={12} />
                 </button>
               </div>
             ))}

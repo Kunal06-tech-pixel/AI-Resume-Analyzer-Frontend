@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import ScoreRing from "../components/ScoreRing";
 import FloatingChatButton from "../components/FloatingChatButton";
-import PageShell from "../components/ui/PageShell";
+import AppShell from "../components/ui/AppShell";
 import { PrimaryButton, SecondaryButton } from "../components/ui/Buttons";
+import { useToast } from "../components/ui/useToast";
 import api from "../services/axios";
 import {
   compactFileName,
@@ -23,19 +24,25 @@ import {
   normalizeAnalysis,
 } from "../utils/analysis";
 
+const tabs = [
+  { label: "Overview", value: "overview" },
+  { label: "Skills", value: "skills" },
+  { label: "Suggestions", value: "suggestions" },
+];
+
 const SectionCard = ({ title, icon: Icon, tone = "slate", children }) => {
   const tones = {
-    green: "text-purple-600",
-    amber: "text-amber-500",
-    red: "text-red-500",
+    green: "text-emerald-600",
+    amber: "text-amber-600",
+    red: "text-red-600",
     blue: "text-blue-600",
     violet: "text-violet-600",
-    slate: "text-gray-700",
+    slate: "text-slate-600",
   };
 
   return (
-    <section className="rounded-2xl bg-white/75 p-5 shadow-sm backdrop-blur-lg">
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900">
+    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/[0.03]">
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
         {Icon && <Icon size={17} className={tones[tone]} />}
         {title}
       </h3>
@@ -46,25 +53,19 @@ const SectionCard = ({ title, icon: Icon, tone = "slate", children }) => {
 
 const BulletList = ({ items, tone = "slate" }) => {
   const colors = {
-    green: "marker:text-purple-500",
+    green: "marker:text-emerald-500",
     amber: "marker:text-amber-500",
     red: "marker:text-red-500",
     violet: "marker:text-violet-500",
-    slate: "marker:text-gray-400",
+    slate: "marker:text-slate-400",
   };
 
   if (!items.length) {
-    return (
-      <p className="text-xs leading-relaxed text-gray-500">
-        No items available.
-      </p>
-    );
+    return <p className="text-sm leading-6 text-slate-500">No items available.</p>;
   }
 
   return (
-    <ul
-      className={`list-disc space-y-2 pl-4 text-xs leading-relaxed text-gray-700 ${colors[tone]}`}
-    >
+    <ul className={`list-disc space-y-2 pl-4 text-sm leading-6 text-slate-600 ${colors[tone]}`}>
       {items.map((item, index) => (
         <li key={`${item}-${index}`}>{item}</li>
       ))}
@@ -74,16 +75,13 @@ const BulletList = ({ items, tone = "slate" }) => {
 
 const SkillPills = ({ items, tone = "slate" }) => {
   const styles = {
-    slate: "bg-purple-100 text-purple-700",
-    red: "bg-red-50 text-red-600 ring-red-200",
+    slate: "border-slate-200 bg-slate-50 text-slate-700",
+    red: "border-red-200 bg-red-50 text-red-700",
+    green: "border-emerald-200 bg-emerald-50 text-emerald-700",
   };
 
   if (!items.length) {
-    return (
-      <p className="text-xs leading-relaxed text-gray-500">
-        No skills available.
-      </p>
-    );
+    return <p className="text-sm leading-6 text-slate-500">No skills available.</p>;
   }
 
   return (
@@ -91,7 +89,7 @@ const SkillPills = ({ items, tone = "slate" }) => {
       {items.map((skill, index) => (
         <span
           key={`${skill}-${index}`}
-          className={`rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-transparent ${styles[tone]}`}
+          className={`rounded-md border px-2.5 py-1 text-sm font-medium ${styles[tone]}`}
         >
           {skill}
         </span>
@@ -100,13 +98,30 @@ const SkillPills = ({ items, tone = "slate" }) => {
   );
 };
 
+const LoadingState = () => (
+  <AppShell title="Analysis detail" description="Loading saved report">
+    <div className="mx-auto max-w-6xl">
+      <div className="flex items-center justify-center rounded-lg border border-slate-200 bg-white py-20 shadow-sm shadow-slate-950/[0.03]">
+        <div className="text-center">
+          <Loader2 size={32} className="mx-auto animate-spin text-slate-500" />
+          <p className="mt-4 text-sm font-medium text-slate-500">
+            Loading analysis...
+          </p>
+        </div>
+      </div>
+    </div>
+  </AppShell>
+);
+
 const ResumeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     let active = true;
@@ -136,6 +151,8 @@ const ResumeDetail = () => {
       active = false;
     };
   }, [id]);
+
+  const normalized = normalizeAnalysis(analysis);
 
   const handleExport = async () => {
     if (!normalized) return;
@@ -220,123 +237,106 @@ const ResumeDetail = () => {
       addSection("Improvement Suggestions", normalized.suggestions);
 
       doc.save(`${baseName || "resume"}-analysis.pdf`);
+      toast.success("The analysis PDF has been exported.");
+    } catch (err) {
+      console.error("Export error:", err);
+      toast.error("Failed to export this analysis.");
     } finally {
       setExporting(false);
     }
   };
 
-  if (loading) {
-    return (
-      <PageShell className="mx-auto w-full max-w-5xl px-4 pb-20 pt-8 sm:px-6">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={32} className="animate-spin text-purple-500" />
-        </div>
-      </PageShell>
-    );
-  }
+  if (loading) return <LoadingState />;
 
-  if (error || !analysis) {
+  if (error || !analysis || !normalized) {
     return (
-      <PageShell className="mx-auto w-full max-w-5xl px-4 pb-20 pt-8 sm:px-6">
-        <div className="rounded-2xl bg-white/75 p-8 text-center shadow-md backdrop-blur-lg">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-red-600">
+      <AppShell title="Analysis detail" description="Saved report">
+        <div className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-10 text-center shadow-sm shadow-slate-950/[0.03]">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600">
             <AlertTriangle size={22} />
           </div>
-          <h3 className="mt-4 text-sm font-semibold text-gray-950">
+          <h3 className="mt-4 text-base font-semibold text-slate-950">
             {error || "Analysis not found"}
           </h3>
-          <SecondaryButton
-            onClick={() => navigate("/dashboard")}
-            className="mt-5"
-          >
+          <SecondaryButton onClick={() => navigate("/dashboard")} className="mt-5">
             <ArrowLeft size={16} />
             Back to Dashboard
           </SecondaryButton>
         </div>
-      </PageShell>
-    );
-  }
-
-  const normalized = normalizeAnalysis(analysis);
-
-  if (!normalized) {
-    return (
-      <PageShell className="mx-auto w-full max-w-5xl px-4 pb-20 pt-8 sm:px-6">
-        <div className="rounded-2xl bg-white/75 p-8 text-center shadow-md backdrop-blur-lg">
-          <h3 className="text-sm font-semibold text-gray-950">
-            Invalid analysis data
-          </h3>
-          <SecondaryButton
-            onClick={() => navigate("/dashboard")}
-            className="mt-5"
-          >
-            <ArrowLeft size={16} />
-            Back to Dashboard
-          </SecondaryButton>
-        </div>
-      </PageShell>
+      </AppShell>
     );
   }
 
   return (
-    <PageShell className="mx-auto w-full max-w-5xl px-4 pb-20 pt-8 sm:px-6">
-      {/* Header */}
-      <header className="mb-6">
-        <SecondaryButton
-          onClick={() => navigate("/dashboard")}
-          className="mb-4"
-        >
-          <ArrowLeft size={16} />
-          Back to Dashboard
-        </SecondaryButton>
-
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-950">
-              <FileText size={24} className="shrink-0 text-purple-600" />
-              <span className="truncate">
-                {compactFileName(normalized.fileName)}
-              </span>
-            </h1>
-            <p className="mt-2 text-sm text-gray-500">
-              Analyzed on {formatDateTime(normalized.createdAt)}
-            </p>
-          </div>
-
-          <PrimaryButton
-            onClick={handleExport}
-            disabled={exporting}
-            className="flex items-center gap-2"
-          >
+    <AppShell
+      title={compactFileName(normalized.fileName)}
+      description={`Analyzed on ${formatDateTime(normalized.createdAt)}`}
+      actions={
+        <>
+          <SecondaryButton onClick={() => navigate("/dashboard")} className="hidden sm:inline-flex">
+            <ArrowLeft size={16} />
+            Dashboard
+          </SecondaryButton>
+          <PrimaryButton onClick={handleExport} disabled={exporting}>
             <Download size={16} />
-            {exporting ? "Exporting..." : "Export PDF"}
+            {exporting ? "Exporting..." : "Export"}
           </PrimaryButton>
-        </div>
-      </header>
+        </>
+      }
+    >
+      <div className="mx-auto max-w-7xl space-y-6">
+        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+          <div className="grid gap-6 lg:grid-cols-[12rem_1fr] lg:items-center">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+              <ScoreRing
+                score={normalized.atsScore.score}
+                size={132}
+                strokeWidth={9}
+                label="ATS Score"
+              />
+            </div>
 
-      {/* Main Content */}
-      <div className="space-y-4">
-        {/* Score Summary */}
-        <section className="grid gap-6 rounded-2xl bg-white/75 p-6 shadow-sm backdrop-blur-lg md:grid-cols-[150px_1fr] md:items-center">
-            <ScoreRing
-              score={normalized.atsScore.score}
-              size={132}
-              strokeWidth={9}
-              label="ATS Score"
-            />
-
-            <div>
-              <h3 className="mb-2 text-sm font-semibold text-gray-950">
-                Summary
-              </h3>
-              <p className="text-xs leading-6 text-gray-600">
+            <div className="min-w-0">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
+                  <FileText size={13} />
+                  Saved report
+                </span>
+                {normalized.atsScore.level && (
+                  <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+                    {normalized.atsScore.level} fit
+                  </span>
+                )}
+              </div>
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+                Resume analysis report
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
                 {normalized.summary}
               </p>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Strengths & Weaknesses */}
-          <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setActiveTab(tab.value)}
+              className={`rounded-md px-4 py-2 text-sm font-medium transition ${
+                activeTab === tab.value
+                  ? "bg-white text-slate-950 shadow-sm shadow-slate-950/[0.04]"
+                  : "text-slate-500 hover:text-slate-950"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "overview" && (
+          <div className="grid gap-4 lg:grid-cols-2">
             <SectionCard title="Strengths" icon={CheckCircle2} tone="green">
               <BulletList items={normalized.strengths} tone="green" />
             </SectionCard>
@@ -344,33 +344,32 @@ const ResumeDetail = () => {
             <SectionCard title="Weaknesses" icon={AlertTriangle} tone="amber">
               <BulletList items={normalized.weaknesses} tone="amber" />
             </SectionCard>
-          </div>
 
-          {/* Skills */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <SectionCard title="Skills Detected" icon={Zap} tone="violet">
-              <SkillPills items={normalized.skillsDetected} />
+            <div className="lg:col-span-2">
+              <SectionCard title="Experience Analysis" icon={Sparkles} tone="blue">
+                <p className="text-sm leading-7 text-slate-600">
+                  {normalized.experienceAnalysis}
+                </p>
+              </SectionCard>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "skills" && (
+          <div className="grid gap-4 lg:grid-cols-2">
+            <SectionCard title="Skills Detected" icon={Zap} tone="green">
+              <SkillPills items={normalized.skillsDetected} tone="green" />
             </SectionCard>
 
             <SectionCard title="Missing Skills" icon={ShieldX} tone="red">
               <SkillPills items={normalized.missingSkills} tone="red" />
             </SectionCard>
           </div>
+        )}
 
-          {/* Experience Analysis */}
-          <SectionCard title="Experience Analysis" icon={Sparkles} tone="blue">
-            <p className="text-xs leading-6 text-gray-600">
-              {normalized.experienceAnalysis}
-            </p>
-          </SectionCard>
-
-          {/* Improvement Suggestions */}
-          <SectionCard
-            title="Improvement Suggestions"
-            icon={Lightbulb}
-            tone="amber"
-          >
-            <ol className="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-gray-700 marker:text-violet-500">
+        {activeTab === "suggestions" && (
+          <SectionCard title="Improvement Suggestions" icon={Lightbulb} tone="amber">
+            <ol className="list-decimal space-y-3 pl-5 text-sm leading-7 text-slate-600 marker:font-semibold marker:text-slate-400">
               {normalized.suggestions.length ? (
                 normalized.suggestions.map((suggestion, index) => (
                   <li key={`${suggestion}-${index}`}>{suggestion}</li>
@@ -380,14 +379,11 @@ const ResumeDetail = () => {
               )}
             </ol>
           </SectionCard>
+        )}
       </div>
 
-      {/* Floating Chat Button */}
-      <FloatingChatButton
-        analysisId={id}
-        fileName={normalized.fileName}
-      />
-    </PageShell>
+      <FloatingChatButton analysisId={id} fileName={normalized.fileName} />
+    </AppShell>
   );
 };
 
