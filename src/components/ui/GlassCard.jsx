@@ -1,7 +1,7 @@
 const GlassCard = ({ children, className = "" }) => {
   return (
     <div
-      className={`glass-panel rounded-lg p-6 ${className}`}
+      className={`liquid-glass rounded-2xl p-6 ${className}`}
     >
       {children}
     </div>

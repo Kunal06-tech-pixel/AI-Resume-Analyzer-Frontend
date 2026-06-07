@@ -53,7 +53,7 @@ const InsightCard = ({ title, icon: Icon, children, tone = "slate" }) => {
   };
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/[0.03]">
+    <section className="liquid-glass rounded-2xl p-5">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
         {Icon && <Icon size={17} className={iconStyles[tone]} />}
         {title}
@@ -92,9 +92,9 @@ const AnalysisResults = ({ data }) => {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+      <section className="liquid-glass-strong rounded-2xl p-6">
         <div className="grid gap-6 lg:grid-cols-[12rem_1fr] lg:items-center">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+          <div className="liquid-pill rounded-2xl p-5">
             <ScoreRing
               score={analysis.atsScore.score}
               size={132}
@@ -105,7 +105,7 @@ const AnalysisResults = ({ data }) => {
 
           <div className="min-w-0">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
+              <span className="liquid-pill inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
                 <FileText size={13} />
                 Analysis report
               </span>
@@ -125,7 +125,7 @@ const AnalysisResults = ({ data }) => {
         </div>
       </section>
 
-      <div className="flex overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-1">
+      <div className="liquid-segmented flex overflow-x-auto rounded-2xl p-1">
         {tabs.map((tab) => (
           <button
             key={tab.value}
@@ -133,7 +133,7 @@ const AnalysisResults = ({ data }) => {
             onClick={() => setActiveTab(tab.value)}
             className={`rounded-md px-4 py-2 text-sm font-medium transition ${
               activeTab === tab.value
-                ? "bg-white text-slate-950 shadow-sm shadow-slate-950/[0.04]"
+                ? "liquid-pill text-slate-950"
                 : "text-slate-500 hover:text-slate-950"
             }`}
           >

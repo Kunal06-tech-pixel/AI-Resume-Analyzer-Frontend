@@ -41,7 +41,7 @@ const SectionCard = ({ title, icon: Icon, tone = "slate", children }) => {
   };
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/[0.03]">
+    <section className="liquid-glass rounded-2xl p-5">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
         {Icon && <Icon size={17} className={tones[tone]} />}
         {title}
@@ -101,7 +101,7 @@ const SkillPills = ({ items, tone = "slate" }) => {
 const LoadingState = () => (
   <AppShell title="Analysis detail" description="Loading saved report">
     <div className="mx-auto max-w-6xl">
-      <div className="flex items-center justify-center rounded-lg border border-slate-200 bg-white py-20 shadow-sm shadow-slate-950/[0.03]">
+      <div className="liquid-glass flex items-center justify-center rounded-2xl py-20">
         <div className="text-center">
           <Loader2 size={32} className="mx-auto animate-spin text-slate-500" />
           <p className="mt-4 text-sm font-medium text-slate-500">
@@ -251,8 +251,8 @@ const ResumeDetail = () => {
   if (error || !analysis || !normalized) {
     return (
       <AppShell title="Analysis detail" description="Saved report">
-        <div className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-10 text-center shadow-sm shadow-slate-950/[0.03]">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600">
+        <div className="liquid-glass mx-auto max-w-3xl rounded-2xl p-10 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-red-200/70 bg-red-50/70 text-red-600 backdrop-blur-xl">
             <AlertTriangle size={22} />
           </div>
           <h3 className="mt-4 text-base font-semibold text-slate-950">
@@ -285,9 +285,9 @@ const ResumeDetail = () => {
       }
     >
       <div className="mx-auto max-w-7xl space-y-6">
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+        <section className="liquid-glass-strong rounded-2xl p-6">
           <div className="grid gap-6 lg:grid-cols-[12rem_1fr] lg:items-center">
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+            <div className="liquid-pill rounded-2xl p-5">
               <ScoreRing
                 score={normalized.atsScore.score}
                 size={132}
@@ -298,7 +298,7 @@ const ResumeDetail = () => {
 
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
+                <span className="liquid-pill inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
                   <FileText size={13} />
                   Saved report
                 </span>
@@ -318,7 +318,7 @@ const ResumeDetail = () => {
           </div>
         </section>
 
-        <div className="flex overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-1">
+        <div className="liquid-segmented flex overflow-x-auto rounded-2xl p-1">
           {tabs.map((tab) => (
             <button
               key={tab.value}
@@ -326,7 +326,7 @@ const ResumeDetail = () => {
               onClick={() => setActiveTab(tab.value)}
               className={`rounded-md px-4 py-2 text-sm font-medium transition ${
                 activeTab === tab.value
-                  ? "bg-white text-slate-950 shadow-sm shadow-slate-950/[0.04]"
+                  ? "liquid-pill text-slate-950"
                   : "text-slate-500 hover:text-slate-950"
               }`}
             >

@@ -5,22 +5,22 @@ import { ToastContext } from "./ToastContextBase";
 const toneMap = {
   success: {
     icon: CheckCircle2,
-    className: "border-emerald-200 bg-emerald-50 text-emerald-900",
+    className: "border-emerald-200/70 text-emerald-900",
     iconClassName: "text-emerald-600",
   },
   error: {
     icon: AlertCircle,
-    className: "border-red-200 bg-red-50 text-red-900",
+    className: "border-red-200/70 text-red-900",
     iconClassName: "text-red-600",
   },
   warning: {
     icon: AlertCircle,
-    className: "border-amber-200 bg-amber-50 text-amber-900",
+    className: "border-amber-200/70 text-amber-900",
     iconClassName: "text-amber-600",
   },
   info: {
     icon: Info,
-    className: "border-slate-200 bg-white text-slate-900",
+    className: "border-white/70 text-slate-900",
     iconClassName: "text-slate-500",
   },
 };
@@ -76,7 +76,7 @@ export const ToastProvider = ({ children }) => {
           return (
             <div
               key={toast.id}
-              className={`glass-panel-strong flex items-start gap-3 rounded-lg border p-4 ${tone.className}`}
+              className={`liquid-glass-strong flex items-start gap-3 rounded-2xl border p-4 ${tone.className}`}
             >
               <Icon size={18} className={`mt-0.5 shrink-0 ${tone.iconClassName}`} />
               <div className="min-w-0 flex-1">

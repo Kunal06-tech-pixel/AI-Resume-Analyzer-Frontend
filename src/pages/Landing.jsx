@@ -40,7 +40,7 @@ export default function Landing() {
     <PageShell>
       <section className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl grid-cols-1 items-center gap-12 px-4 pb-10 pt-14 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:pt-8">
         <div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-xl border border-white/65 bg-white/50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-teal-800 shadow-lg shadow-teal-950/[0.08] backdrop-blur-2xl">
+          <div className="liquid-pill mb-6 inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-teal-800">
             <SparkleDot />
             AI resume operating system
           </div>
@@ -80,7 +80,7 @@ export default function Landing() {
             </SecondaryButton>
           </div>
 
-          <div className="glass-panel mt-10 grid max-w-xl grid-cols-3 gap-4 rounded-2xl p-4">
+          <div className="liquid-glass mt-10 grid max-w-xl grid-cols-3 gap-4 rounded-3xl p-4">
             {[
               ["50", "saved reports"],
               ["PDF", "resume export"],
@@ -97,28 +97,28 @@ export default function Landing() {
         </div>
 
         <div className="relative">
-          <div className="glass-panel-strong rounded-3xl p-5">
-            <div className="rounded-2xl border border-white/60 bg-white/35">
-              <div className="flex items-center justify-between border-b border-white/50 bg-white/35 px-4 py-3 backdrop-blur-xl">
+          <div className="liquid-glass-strong rounded-3xl p-5">
+            <div className="liquid-glass rounded-3xl">
+              <div className="liquid-divider flex items-center justify-between border-b bg-white/24 px-4 py-3 backdrop-blur-xl">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 </div>
-                <span className="rounded-xl border border-white/60 bg-white/55 px-3 py-2 text-xs font-semibold text-teal-800 shadow-sm shadow-teal-950/[0.05] backdrop-blur-xl">
+                <span className="liquid-pill rounded-xl px-3 py-2 text-xs font-semibold text-teal-800">
                   ats-report.pdf
                 </span>
               </div>
 
               <div className="grid gap-4 p-4 lg:grid-cols-[12rem_1fr]">
-                <div className="glass-panel space-y-3 rounded-xl p-3">
+                <div className="liquid-glass space-y-3 rounded-2xl p-3">
                   {["Dashboard", "Analyzer", "Builder"].map((item, index) => (
                     <div
                       key={item}
                       className={`rounded-lg px-3 py-2 text-sm font-medium ${
                         index === 1
-                          ? "bg-slate-950 text-white"
-                          : "border border-white/50 bg-white/35 text-slate-500"
+                          ? "liquid-button-primary text-white"
+                          : "liquid-pill text-slate-500"
                       }`}
                     >
                       {item}
@@ -135,7 +135,7 @@ export default function Landing() {
                     ].map(([value, label]) => (
                       <div
                         key={label}
-                        className="rounded-xl border border-white/60 bg-white/42 p-4 shadow-sm shadow-teal-950/[0.05] backdrop-blur-xl"
+                        className="liquid-pill rounded-2xl p-4"
                       >
                         <p className="text-2xl font-semibold text-slate-950">
                           {value}
@@ -147,7 +147,7 @@ export default function Landing() {
                     ))}
                   </div>
 
-                  <div className="rounded-xl border border-white/60 bg-white/42 p-4 shadow-sm shadow-teal-950/[0.05] backdrop-blur-xl">
+                  <div className="liquid-pill rounded-2xl p-4">
                     <div className="mb-4 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold text-slate-950">
@@ -168,7 +168,7 @@ export default function Landing() {
                             <span>{["Keywords", "Experience", "Formatting"][index]}</span>
                             <span>{width}%</span>
                           </div>
-                          <div className="h-2 rounded-full bg-teal-950/10">
+                          <div className="h-2 overflow-hidden rounded-full bg-teal-950/10">
                             <div
                               className="h-2 rounded-full bg-slate-950"
                               style={{ width: `${width}%` }}
@@ -180,7 +180,7 @@ export default function Landing() {
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl border border-white/60 bg-white/42 p-4 shadow-sm shadow-teal-950/[0.05] backdrop-blur-xl">
+                    <div className="liquid-pill rounded-2xl p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
                         Suggestions
                       </p>
@@ -188,7 +188,7 @@ export default function Landing() {
                         Add measurable outcomes to recent project bullets.
                       </p>
                     </div>
-                    <div className="rounded-xl border border-white/60 bg-white/42 p-4 shadow-sm shadow-teal-950/[0.05] backdrop-blur-xl">
+                    <div className="liquid-pill rounded-2xl p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
                         Missing skills
                       </p>
@@ -235,9 +235,9 @@ export default function Landing() {
             return (
               <div
                 key={item.title}
-                className="glass-panel rounded-xl p-6 transition hover:-translate-y-0.5 hover:shadow-xl"
+                className="liquid-glass liquid-hover rounded-2xl p-6"
               >
-                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg border border-white/60 bg-teal-50/55 text-teal-800 shadow-sm shadow-teal-950/[0.05]">
+                <div className="liquid-pill mb-5 flex h-10 w-10 items-center justify-center rounded-xl text-teal-800">
                   <Icon size={20} />
                 </div>
 
@@ -260,7 +260,7 @@ export default function Landing() {
           </h2>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="glass-panel rounded-xl p-6">
+          <div className="liquid-glass rounded-2xl p-6">
             <h3 className="mb-6 text-lg font-semibold text-slate-950">
               Resume Analyzer
             </h3>
@@ -279,7 +279,7 @@ export default function Landing() {
                     key={step.label}
                     className="group relative z-10 flex flex-col items-center gap-2"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/60 bg-white/50 text-teal-800 shadow-sm transition group-hover:-translate-y-0.5 group-hover:border-teal-200">
+                    <div className="liquid-pill flex h-10 w-10 items-center justify-center rounded-xl text-teal-800 transition group-hover:-translate-y-0.5 group-hover:border-teal-200">
                       <Icon size={16} />
                     </div>
                     <span className="text-xs font-medium text-slate-500 transition group-hover:text-slate-950">
@@ -299,7 +299,7 @@ export default function Landing() {
             </PrimaryButton>
           </div>
 
-          <div className="glass-panel rounded-xl p-6">
+          <div className="liquid-glass rounded-2xl p-6">
             <h3 className="mb-6 text-lg font-semibold text-slate-950">
               Resume Builder
             </h3>
@@ -318,7 +318,7 @@ export default function Landing() {
                     key={step.label}
                     className="group relative z-10 flex flex-col items-center gap-2"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/60 bg-white/50 text-teal-800 shadow-sm transition group-hover:-translate-y-0.5 group-hover:border-teal-200">
+                    <div className="liquid-pill flex h-10 w-10 items-center justify-center rounded-xl text-teal-800 transition group-hover:-translate-y-0.5 group-hover:border-teal-200">
                       <Icon size={16} />
                     </div>
                     <span className="text-xs font-medium text-slate-500 transition group-hover:text-slate-950">

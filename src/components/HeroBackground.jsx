@@ -19,7 +19,7 @@ function ElegantShape({
         delay,
         ease: [0.23, 0.86, 0.39, 0.96],
       }}
-      className={cn("absolute pointer-events-none", className)} // ✅ FIX
+      className={cn("absolute pointer-events-none", className)}
     >
       <Motion.div
         animate={{ y: [0, 15, 0] }}
@@ -29,15 +29,15 @@ function ElegantShape({
           ease: "easeInOut",
         }}
         style={{ width, height }}
-        className="relative pointer-events-none" // ✅ FIX
+        className="relative pointer-events-none"
       >
         <div
           className={cn(
-            "absolute inset-0 rounded-full pointer-events-none", // ✅ FIX
+            "absolute inset-0 rounded-[999px] pointer-events-none",
             "bg-linear-to-r to-transparent",
             gradient,
-            "backdrop-blur-[2px] border border-white/20",
-            "shadow-lg"
+            "backdrop-blur-[3px] border border-white/30",
+            "shadow-lg shadow-teal-950/10"
           )}
         />
       </Motion.div>
@@ -54,7 +54,7 @@ export default function HeroBackground() {
         width={600}
         height={140}
         rotate={12}
-        gradient="from-indigo-500/20"
+        gradient="from-teal-400/20"
         className="left-[-10%] top-[20%]"
       />
 
@@ -63,7 +63,7 @@ export default function HeroBackground() {
         width={500}
         height={120}
         rotate={-15}
-        gradient="from-pink-500/20"
+        gradient="from-emerald-300/20"
         className="right-[-5%] top-[75%]"
       />
 
@@ -72,7 +72,7 @@ export default function HeroBackground() {
         width={300}
         height={80}
         rotate={-8}
-        gradient="from-purple-500/20"
+        gradient="from-teal-700/10"
         className="left-[10%] bottom-[10%]"
       />
 
@@ -81,7 +81,7 @@ export default function HeroBackground() {
         width={200}
         height={60}
         rotate={20}
-        gradient="from-yellow-500/20"
+        gradient="from-teal-200/20"
         className="right-[20%] top-[15%]"
       />
     </div>
