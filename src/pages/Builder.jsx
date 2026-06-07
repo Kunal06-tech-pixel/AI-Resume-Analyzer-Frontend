@@ -155,7 +155,7 @@ const Builder = () => {
                   Resume document
                 </h2>
               </div>
-              <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-500">
+              <span className="liquid-pill rounded-lg px-2 py-1 text-xs font-semibold text-slate-500">
                 PDF
               </span>
             </div>

@@ -158,7 +158,7 @@ const SkillsForm = ({ data, setData }) => {
           <button
             type="button"
             onClick={addCertification}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+            className="liquid-pill mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
           >
             <Plus size={13} />
             Add Certification
@@ -168,7 +168,7 @@ const SkillsForm = ({ data, setData }) => {
             {skills.certifications.map((cert, index) => (
               <div
                 key={`${typeof cert === "string" ? cert : cert.name}-${index}`}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
+                className="liquid-pill flex items-center justify-between rounded-xl px-3 py-2 text-xs text-slate-700"
               >
                 <span className="truncate">
                   {typeof cert === "string" ? cert : cert.name}

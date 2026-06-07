@@ -102,7 +102,7 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+        <div className="liquid-glass rounded-2xl p-6">
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
               Analysis setup
@@ -167,7 +167,7 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
           </div>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+        <div className="liquid-glass rounded-2xl p-6">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
@@ -180,7 +180,7 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
                 PDF only, up to 10MB. The file is sent to the existing analysis endpoint.
               </p>
             </div>
-            <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-500">
+            <span className="liquid-pill rounded-lg px-2 py-1 text-xs font-semibold text-slate-500">
               PDF
             </span>
           </div>
@@ -192,15 +192,15 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
             }}
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
-            className={`flex min-h-72 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center transition ${
+            className={`flex min-h-72 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed p-8 text-center transition ${
               dragging
-                ? "border-slate-500 bg-slate-100"
-                : "border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-white"
+                ? "border-teal-400/70 bg-teal-50/60 shadow-lg shadow-teal-950/[0.08]"
+                : "border-white/70 bg-white/28 hover:border-teal-200/80 hover:bg-white/42"
             }`}
           >
             {resumeFile ? (
               <div className="w-full max-w-sm">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-200/70 bg-emerald-50/70 text-emerald-700 backdrop-blur-xl">
                   <CheckCircle2 size={22} />
                 </div>
                 <p className="truncate text-sm font-semibold text-slate-950">
@@ -212,7 +212,7 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
               </div>
             ) : (
               <>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm shadow-slate-950/[0.03]">
+                <div className="liquid-pill mb-4 flex h-12 w-12 items-center justify-center rounded-2xl text-slate-600">
                   <Upload size={22} />
                 </div>
                 <p className="text-sm font-semibold text-slate-950">
@@ -247,9 +247,9 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
       </section>
 
       {loading && (
-        <section ref={loaderRef} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+        <section ref={loaderRef} className="liquid-glass rounded-2xl p-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+            <div className="liquid-pill flex h-12 w-12 items-center justify-center rounded-2xl text-slate-600">
               <Loader2 size={22} className="animate-spin" />
             </div>
             <div className="flex-1">

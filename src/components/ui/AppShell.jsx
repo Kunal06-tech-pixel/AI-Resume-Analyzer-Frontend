@@ -35,10 +35,10 @@ const NavList = ({ onNavigate }) => {
               navigate(item.to);
               onNavigate?.();
             }}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
               active
-                ? "bg-slate-950 text-white shadow-sm shadow-slate-950/15"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                ? "liquid-button-primary text-white"
+                : "text-slate-600 hover:bg-white/35 hover:text-slate-950"
             }`}
           >
             <Icon size={17} />
@@ -60,9 +60,9 @@ const UserBlock = ({ user, onLogout }) => {
     .toUpperCase();
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-2 shadow-sm shadow-slate-950/[0.03]">
+    <div className="liquid-glass rounded-2xl p-2">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-950 text-xs font-bold text-white">
+        <div className="liquid-button-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white">
           {initials || "A"}
         </div>
         <div className="min-w-0 flex-1">
@@ -72,7 +72,7 @@ const UserBlock = ({ user, onLogout }) => {
         <button
           type="button"
           onClick={onLogout}
-          className="rounded-md p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50/70 hover:text-red-600"
           aria-label="Logout"
         >
           <LogOut size={16} />
@@ -94,13 +94,13 @@ const AppShell = ({ title, description, actions, children }) => {
 
   return (
     <div className="glass-theme theme-bg min-h-screen text-slate-950">
-      <aside className="glass-panel fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-white/60 px-4 py-5 xl:block">
+      <aside className="liquid-glass-strong fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-white/60 px-4 py-5 xl:block">
         <button
           type="button"
           onClick={() => navigate("/")}
-          className="mb-7 flex items-center gap-3 rounded-lg px-2 text-left"
+          className="mb-7 flex items-center gap-3 rounded-xl px-2 text-left"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-950 text-white">
+          <span className="liquid-button-primary flex h-9 w-9 items-center justify-center rounded-xl text-white">
             <Sparkles size={18} />
           </span>
           <span>
@@ -114,7 +114,7 @@ const AppShell = ({ title, description, actions, children }) => {
         <NavList />
 
         <div className="absolute bottom-5 left-4 right-4">
-          <div className="mb-3 rounded-lg border border-white/60 bg-white/45 p-3 shadow-sm shadow-teal-950/5 backdrop-blur-xl">
+          <div className="liquid-pill mb-3 rounded-2xl p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-700">
               ATS Suite
             </p>
@@ -134,14 +134,14 @@ const AppShell = ({ title, description, actions, children }) => {
             onClick={() => setOpen(false)}
             aria-label="Close navigation overlay"
           />
-          <div className="glass-panel-strong relative flex h-full w-[min(20rem,88vw)] flex-col border-r border-white/60 p-4">
+          <div className="liquid-glass-strong relative flex h-full w-[min(20rem,88vw)] flex-col border-r border-white/60 p-4">
             <div className="mb-6 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => navigate("/")}
                 className="flex items-center gap-3"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-950 text-white">
+                <span className="liquid-button-primary flex h-9 w-9 items-center justify-center rounded-xl text-white">
                   <Sparkles size={18} />
                 </span>
                 <span className="text-sm font-bold text-slate-950">ATSmind AI</span>
@@ -149,7 +149,7 @@ const AppShell = ({ title, description, actions, children }) => {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-lg border border-slate-200 p-2 text-slate-500"
+                className="liquid-pill rounded-xl p-2 text-slate-500"
                 aria-label="Close navigation"
               >
                 <X size={18} />
@@ -164,13 +164,13 @@ const AppShell = ({ title, description, actions, children }) => {
       )}
 
       <div className="xl:pl-72">
-        <header className="sticky top-0 z-30 border-b border-white/50 bg-white/45 shadow-sm shadow-teal-950/5 backdrop-blur-2xl">
+        <header className="sticky top-0 z-30 border-b border-white/50 bg-white/38 shadow-sm shadow-teal-950/5 backdrop-blur-2xl">
           <div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="rounded-lg border border-slate-200 bg-white p-2 text-slate-600 shadow-sm shadow-slate-950/[0.03] xl:hidden"
+                className="liquid-pill rounded-xl p-2 text-slate-600 xl:hidden"
                 aria-label="Open navigation"
               >
                 <Menu size={18} />

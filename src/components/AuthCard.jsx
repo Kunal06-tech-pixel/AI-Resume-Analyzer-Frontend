@@ -77,9 +77,9 @@ const AuthCard = () => {
   };
 
   return (
-    <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-2xl shadow-slate-950/10">
+    <div className="liquid-glass-strong w-full max-w-md rounded-3xl p-8">
       <div className="mb-7">
-        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-700">
+        <div className="liquid-pill mb-5 flex h-11 w-11 items-center justify-center rounded-2xl text-slate-700">
           <Shield size={20} />
         </div>
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
@@ -96,7 +96,7 @@ const AuthCard = () => {
       </div>
 
       {error && (
-        <div className="mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200/70 bg-red-50/70 px-3 py-2 text-sm text-red-700 backdrop-blur-xl">
           <AlertCircle size={16} className="mt-0.5 shrink-0" />
           <p>{error}</p>
         </div>

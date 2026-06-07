@@ -15,17 +15,17 @@ import { compactFileName, formatDateTime, normalizeAnalysis } from "../utils/ana
 
 const SectionCard = ({ title, icon: Icon, tone = "slate", children }) => {
   const tones = {
-    green: "text-purple-600",
+    green: "text-emerald-600",
     amber: "text-amber-500",
     red: "text-red-500",
     blue: "text-blue-600",
     violet: "text-violet-600",
-    slate: "text-gray-700",
+    slate: "text-slate-600",
   };
 
   return (
-    <section className="rounded-2xl bg-white/75 p-5 shadow-sm backdrop-blur-lg">
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900">
+    <section className="liquid-glass rounded-2xl p-5">
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
         {Icon && <Icon size={17} className={tones[tone]} />}
         {title}
       </h3>
@@ -36,19 +36,19 @@ const SectionCard = ({ title, icon: Icon, tone = "slate", children }) => {
 
 const BulletList = ({ items, tone = "slate" }) => {
   const colors = {
-    green: "marker:text-purple-500",
+    green: "marker:text-emerald-500",
     amber: "marker:text-amber-500",
     red: "marker:text-red-500",
     violet: "marker:text-violet-500",
-    slate: "marker:text-gray-400",
+    slate: "marker:text-slate-400",
   };
 
   if (!items.length) {
-    return <p className="text-xs leading-relaxed text-gray-500">No items available.</p>;
+    return <p className="text-xs leading-relaxed text-slate-500">No items available.</p>;
   }
 
   return (
-    <ul className={`list-disc space-y-2 pl-4 text-xs leading-relaxed text-gray-700 ${colors[tone]}`}>
+    <ul className={`list-disc space-y-2 pl-4 text-xs leading-relaxed text-slate-600 ${colors[tone]}`}>
       {items.map((item, index) => (
         <li key={`${item}-${index}`}>{item}</li>
       ))}
@@ -58,12 +58,12 @@ const BulletList = ({ items, tone = "slate" }) => {
 
 const SkillPills = ({ items, tone = "slate" }) => {
   const styles = {
-    slate: "bg-purple-100 text-purple-700",
-    red: "bg-red-50 text-red-600 ring-red-200",
+    slate: "border-teal-200/50 bg-teal-50/60 text-teal-800",
+    red: "border-red-200/70 bg-red-50/70 text-red-700",
   };
 
   if (!items.length) {
-    return <p className="text-xs leading-relaxed text-gray-500">No skills available.</p>;
+    return <p className="text-xs leading-relaxed text-slate-500">No skills available.</p>;
   }
 
   return (
@@ -71,7 +71,7 @@ const SkillPills = ({ items, tone = "slate" }) => {
       {items.map((skill, index) => (
         <span
           key={`${skill}-${index}`}
-          className={`rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-transparent ${styles[tone]}`}
+          className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium ${styles[tone]}`}
         >
           {skill}
         </span>
@@ -182,19 +182,19 @@ const AnalysisDetailModal = ({ analysis, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-start justify-center overflow-y-auto bg-black/70 px-4 py-10 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex items-start justify-center overflow-y-auto bg-slate-950/45 px-4 py-10 backdrop-blur-md"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-3xl rounded-2xl border border-purple-100 bg-linear-to-br from-blue-50 via-white to-pink-100 p-5 shadow-2xl">
+      <div className="liquid-glass-strong w-full max-w-3xl rounded-3xl p-5">
         <header className="mb-4 flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h2 className="flex items-center gap-2 truncate text-sm font-semibold text-gray-950">
-              <FileText size={17} className="text-purple-600" />
+            <h2 className="flex items-center gap-2 truncate text-sm font-semibold text-slate-950">
+              <FileText size={17} className="text-teal-700" />
               <span className="truncate">{compactFileName(normalized.fileName)}</span>
             </h2>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-slate-500">
               Analyzed on {formatDateTime(normalized.createdAt)}
             </p>
           </div>
@@ -202,7 +202,7 @@ const AnalysisDetailModal = ({ analysis, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-gray-500 transition hover:bg-purple-100 hover:text-purple-700"
+            className="rounded-full p-1.5 text-slate-500 transition hover:bg-white/40 hover:text-slate-950"
             aria-label="Close analysis details"
           >
             <X size={17} />
@@ -210,7 +210,7 @@ const AnalysisDetailModal = ({ analysis, onClose }) => {
         </header>
 
         <div className="space-y-4">
-          <section className="grid gap-6 rounded-2xl bg-white/75 p-6 shadow-sm backdrop-blur-lg md:grid-cols-[150px_1fr] md:items-center">
+          <section className="liquid-glass grid gap-6 rounded-2xl p-6 md:grid-cols-[150px_1fr] md:items-center">
             <ScoreRing
               score={normalized.atsScore.score}
               size={132}
@@ -219,8 +219,8 @@ const AnalysisDetailModal = ({ analysis, onClose }) => {
             />
 
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-gray-950">Summary</h3>
-              <p className="text-xs leading-6 text-gray-600">{normalized.summary}</p>
+              <h3 className="mb-2 text-sm font-semibold text-slate-950">Summary</h3>
+              <p className="text-xs leading-6 text-slate-600">{normalized.summary}</p>
             </div>
           </section>
 
@@ -243,13 +243,13 @@ const AnalysisDetailModal = ({ analysis, onClose }) => {
           </div>
 
           <SectionCard title="Experience Analysis" icon={Sparkles} tone="blue">
-            <p className="text-xs leading-6 text-gray-600">
+            <p className="text-xs leading-6 text-slate-600">
               {normalized.experienceAnalysis}
             </p>
           </SectionCard>
 
           <SectionCard title="Improvement Suggestions" icon={Lightbulb} tone="amber">
-            <ol className="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-gray-700 marker:text-violet-500">
+            <ol className="list-decimal space-y-2 pl-4 text-xs leading-relaxed text-slate-600 marker:text-teal-500">
               {normalized.suggestions.length ? (
                 normalized.suggestions.map((suggestion, index) => (
                   <li key={`${suggestion}-${index}`}>{suggestion}</li>
@@ -266,7 +266,7 @@ const AnalysisDetailModal = ({ analysis, onClose }) => {
             type="button"
             onClick={handleExport}
             disabled={exporting}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-purple-400 bg-white/60 px-4 text-xs font-medium text-purple-600 shadow-sm transition hover:bg-linear-to-r hover:from-purple-500 hover:to-blue-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="liquid-button-primary liquid-shine inline-flex h-9 items-center gap-2 rounded-xl px-4 text-xs font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Download size={14} />
             {exporting ? "Exporting..." : "Export as PDF"}

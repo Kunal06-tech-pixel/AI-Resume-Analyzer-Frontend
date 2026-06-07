@@ -45,7 +45,7 @@ const StatCard = ({ label, value, icon, detail }) => {
   const IconComponent = icon;
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/[0.03]">
+    <div className="liquid-glass liquid-hover rounded-2xl p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -53,7 +53,7 @@ const StatCard = ({ label, value, icon, detail }) => {
             {value}
           </p>
         </div>
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+        <div className="liquid-pill flex h-10 w-10 items-center justify-center rounded-xl text-slate-600">
           <IconComponent size={18} />
         </div>
       </div>
@@ -75,7 +75,7 @@ const AnalysisMobileCard = ({ analysis, onNavigate }) => {
     <button
       type="button"
       onClick={() => onNavigate(normalized.id)}
-      className="w-full rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm shadow-slate-950/[0.03] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md md:hidden"
+      className="liquid-glass liquid-hover w-full rounded-2xl p-4 text-left transition md:hidden"
     >
       <div className="flex items-start gap-4">
         <ScoreRing score={score} size={54} strokeWidth={4} animated={false} />
@@ -96,7 +96,7 @@ const AnalysisMobileCard = ({ analysis, onNavigate }) => {
             {skills.slice(0, 4).map((skill, index) => (
               <span
                 key={`${skill}-${index}`}
-                className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600"
+                className="liquid-pill rounded-lg px-2 py-1 text-xs font-medium text-slate-600"
               >
                 {skill}
               </span>
@@ -109,9 +109,9 @@ const AnalysisMobileCard = ({ analysis, onNavigate }) => {
 };
 
 const AnalysisTable = ({ analyses, onNavigate }) => (
-  <div className="hidden overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-slate-950/[0.03] md:block">
+  <div className="liquid-glass hidden overflow-hidden rounded-2xl md:block">
     <table className="w-full border-collapse text-left">
-      <thead className="border-b border-slate-200 bg-slate-50">
+      <thead className="liquid-divider border-b bg-white/28">
         <tr className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
           <th className="px-4 py-3">Resume</th>
           <th className="px-4 py-3">Score</th>
@@ -120,7 +120,7 @@ const AnalysisTable = ({ analyses, onNavigate }) => (
           <th className="px-4 py-3 text-right">Open</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-white/50">
         {analyses.map((analysis) => {
           const normalized = normalizeAnalysis(analysis);
           if (!normalized) return null;
@@ -133,12 +133,12 @@ const AnalysisTable = ({ analyses, onNavigate }) => (
           return (
             <tr
               key={normalized.id}
-              className="group cursor-pointer transition hover:bg-slate-50"
+              className="group cursor-pointer transition hover:bg-white/32"
               onClick={() => onNavigate(normalized.id)}
             >
               <td className="max-w-[22rem] px-4 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500">
+                  <div className="liquid-pill flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-500">
                     <FileText size={17} />
                   </div>
                   <div className="min-w-0">
@@ -163,13 +163,13 @@ const AnalysisTable = ({ analyses, onNavigate }) => (
                   {skills.slice(0, 3).map((skill, index) => (
                     <span
                       key={`${skill}-${index}`}
-                      className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600"
+                      className="liquid-pill rounded-lg px-2 py-1 text-xs font-medium text-slate-600"
                     >
                       {skill}
                     </span>
                   ))}
                   {skills.length > 3 && (
-                    <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">
+                    <span className="liquid-pill rounded-lg px-2 py-1 text-xs font-medium text-slate-500">
                       +{skills.length - 3}
                     </span>
                   )}
@@ -197,7 +197,7 @@ const DashboardSkeleton = () => (
     {[0, 1, 2, 3].map((item) => (
       <div
         key={item}
-        className="h-20 animate-pulse rounded-lg border border-slate-200 bg-white"
+        className="liquid-glass h-20 animate-pulse rounded-2xl"
       />
     ))}
   </div>
@@ -326,7 +326,7 @@ const Dashboard = () => {
           />
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/[0.03]">
+        <section className="liquid-glass rounded-2xl p-4">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-950">
@@ -347,12 +347,12 @@ const Dashboard = () => {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-900/[0.06] sm:w-72"
+                  className="liquid-control h-10 w-full rounded-xl pl-9 pr-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-300/70 focus:ring-4 focus:ring-teal-500/15 sm:w-72"
                   placeholder="Search resumes, skills, roles..."
                 />
               </div>
 
-              <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+              <div className="liquid-segmented flex rounded-2xl p-1">
                 {filterItems.map((item) => (
                   <button
                     key={item.value}
@@ -360,7 +360,7 @@ const Dashboard = () => {
                     onClick={() => setFilter(item.value)}
                     className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                       filter === item.value
-                        ? "bg-white text-slate-950 shadow-sm shadow-slate-950/[0.04]"
+                        ? "liquid-pill text-slate-950"
                         : "text-slate-500 hover:text-slate-950"
                     }`}
                   >
@@ -396,8 +396,8 @@ const Dashboard = () => {
             ))}
           </section>
         ) : (
-          <section className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm shadow-slate-950/[0.03]">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500">
+          <section className="liquid-glass rounded-2xl border-dashed border-slate-300/70 p-10 text-center">
+            <div className="liquid-pill mx-auto flex h-12 w-12 items-center justify-center rounded-2xl text-slate-500">
               <Search size={22} />
             </div>
             <h3 className="mt-4 text-base font-semibold text-slate-950">
