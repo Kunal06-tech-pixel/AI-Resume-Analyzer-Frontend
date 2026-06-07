@@ -1,21 +1,25 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  AlignLeft,
+  Briefcase,
+  Building2,
+  CheckCircle2,
+  FileText,
+  Loader2,
+  Upload,
+  X,
+} from "lucide-react";
 import AnalysisResults from "./AnalysisResults";
 import api from "../services/axios";
-import GlassCard from "./ui/GlassCard";
-import { PrimaryButton } from "./ui/Buttons";
-import { inputClass, smallLabelClass } from "../utils/uiClasses";
+import { PrimaryButton, SecondaryButton } from "./ui/Buttons";
+import { inputClass, labelClass } from "../utils/uiClasses";
+import { useToast } from "./ui/useToast";
 
-export default function DashboardResumeAnalyzer({
-  preloadedResult = null,
-}) {
+export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
   const [resumeFile, setResumeFile] = useState(null);
-
-  // ✅ BUILDER RESULT SUPPORT
-  const [analysisResult, setAnalysisResult] = useState(
-    preloadedResult || null
-  );
-
+  const [analysisResult, setAnalysisResult] = useState(preloadedResult || null);
   const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
@@ -23,25 +27,33 @@ export default function DashboardResumeAnalyzer({
 
   const loaderRef = useRef(null);
   const resultRef = useRef(null);
+  const toast = useToast();
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const acceptFile = (file) => {
+    if (!file) return;
 
-    if (file) {
-      const isPdf =
-        file.type === "application/pdf" ||
-        file.name.toLowerCase().endsWith(".pdf");
+    const isPdf =
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
 
-      if (!isPdf) {
-        alert("Please upload a PDF resume");
-        e.target.value = null;
-        return;
-      }
-
-      setResumeFile(file);
+    if (!isPdf) {
+      toast.error("Please upload a PDF resume.");
+      return;
     }
 
-    e.target.value = null;
+    setResumeFile(file);
+    toast.success(file.name, "Resume ready");
+  };
+
+  const handleFileChange = (event) => {
+    acceptFile(event.target.files[0]);
+    event.target.value = null;
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setDragging(false);
+    acceptFile(event.dataTransfer.files[0]);
   };
 
   const handleClearFile = () => {
@@ -50,7 +62,7 @@ export default function DashboardResumeAnalyzer({
 
   const handleSubmit = async () => {
     if (!resumeFile) {
-      alert("Please upload a resume first");
+      toast.error("Please upload a resume first.");
       return;
     }
 
@@ -66,167 +78,197 @@ export default function DashboardResumeAnalyzer({
     try {
       const res = await api.post("/api/resume/upload", formData);
       setAnalysisResult(res.data.analysis);
+      toast.success("Your analysis report is ready.");
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Upload failed");
+      toast.error(error.response?.data?.message || "Upload failed");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  // ✅ AUTO SCROLL TO LOADER
   useEffect(() => {
     if (loading && loaderRef.current) {
-      loaderRef.current.scrollIntoView({
-        behavior: "smooth",
-      });
+      loaderRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [loading]);
 
-  // ✅ AUTO SCROLL TO RESULTS
   useEffect(() => {
     if (!loading && analysisResult && resultRef.current) {
-      resultRef.current.scrollIntoView({
-        behavior: "smooth",
-      });
+      resultRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [analysisResult, loading]);
 
   return (
-    <div className="mt-10 flex flex-col items-center px-4">
-
-      {/* HERO */}
-      <h1 className="text-center text-4xl font-bold leading-tight text-gray-950">
-        Smart feedback for your
-        <span className="block bg-linear-to-r from-purple-500 via-pink-500 to-blue-500 bg-clip-text text-center text-transparent">
-          DREAM JOB
-        </span>
-      </h1>
-
-      <p className="mt-4 max-w-xl text-center text-sm leading-relaxed text-gray-500">
-        Drop your resume to get an ATS score, detailed insights, and
-        improvement suggestions tailored to your job role.
-      </p>
-
-      {/* FORM */}
-      <div className="flex w-full justify-center px-4 py-14">
-        <GlassCard className="w-full max-w-xl space-y-5 p-10">
-
-          <div>
-            <label className={smallLabelClass}>
-              Company Name
-            </label>
-            <input
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              className={`mt-1 ${inputClass}`}
-              placeholder="Company name"
-            />
-          </div>
-
-          <div>
-            <label className={smallLabelClass}>
-              Job Title
-            </label>
-            <input
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              className={`mt-1 ${inputClass}`}
-              placeholder="Job title"
-            />
-          </div>
-
-          <div>
-            <label className={smallLabelClass}>
-              Job Description
-            </label>
-            <textarea
-              rows={4}
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Write a clear & concise job description..."
-              className={`mt-1 resize-none ${inputClass}`}
-            />
-          </div>
-
-          {/* UPLOAD */}
-          <div>
-            <label className={smallLabelClass}>
-              Upload Resume
-            </label>
-
-            <div className="mt-2 flex flex-col items-center">
-
-              <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-purple-300 bg-white/70 text-center transition hover:border-purple-400 hover:bg-white/90">
-
-                {resumeFile ? (
-                  <p className="text-sm font-medium text-purple-700">
-                    {resumeFile.name}
-                  </p>
-                ) : (
-                  <>
-                    <p className="text-sm font-medium text-gray-700">
-                      Click to upload or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      PDF only (max. 10MB)
-                    </p>
-                  </>
-                )}
-
-                <input
-                  type="file"
-                  accept=".pdf,application/pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
-
-              {resumeFile && (
-                <button
-                  type="button"
-                  onClick={handleClearFile}
-                  className="mt-2 text-xs font-medium text-purple-600 hover:underline"
-                >
-                  Remove file
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* BUTTON */}
-          <PrimaryButton
-            onClick={handleSubmit}
-            className="mt-2 w-full"
-          >
-            Save & Analyze Resume
-          </PrimaryButton>
-        </GlassCard>
-      </div>
-
-      {/* LOADING */}
-      {loading && (
-        <div ref={loaderRef} className="mt-10 w-full max-w-5xl">
-
-          <div className="flex animate-pulse flex-col items-center gap-6 rounded-2xl bg-white/75 p-10 shadow-md backdrop-blur-lg">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></div>
-            <p className="text-gray-500 text-sm">
-              Analyzing your resume...
+    <div className="mx-auto max-w-7xl space-y-6">
+      <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+          <div className="mb-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              Analysis setup
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+              Match your resume to a real role.
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Add job context for more relevant ATS scoring and suggestions.
             </p>
           </div>
-        </div>
-      )}
 
-      {/* RESULTS */}
-      {!loading && analysisResult && (
-        <div
-          ref={resultRef}
-          className="flex justify-center px-4 pb-20 w-full"
-        >
-          <div className="w-full max-w-6xl">
-            <AnalysisResults data={analysisResult} />
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>Company Name</label>
+              <div className="relative">
+                <Building2
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  value={companyName}
+                  onChange={(event) => setCompanyName(event.target.value)}
+                  className={`${inputClass} pl-9`}
+                  placeholder="Company name"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Job Title</label>
+              <div className="relative">
+                <Briefcase
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  value={jobTitle}
+                  onChange={(event) => setJobTitle(event.target.value)}
+                  className={`${inputClass} pl-9`}
+                  placeholder="Product Manager"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Job Description</label>
+              <div className="relative">
+                <AlignLeft
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-3.5 text-slate-400"
+                />
+                <textarea
+                  rows={7}
+                  value={jobDescription}
+                  onChange={(event) => setJobDescription(event.target.value)}
+                  placeholder="Paste the job description or key responsibilities..."
+                  className={`${inputClass} resize-none pl-9`}
+                />
+              </div>
+            </div>
           </div>
         </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                Upload
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+                Add your resume PDF.
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                PDF only, up to 10MB. The file is sent to the existing analysis endpoint.
+              </p>
+            </div>
+            <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-500">
+              PDF
+            </span>
+          </div>
+
+          <label
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+            className={`flex min-h-72 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center transition ${
+              dragging
+                ? "border-slate-500 bg-slate-100"
+                : "border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-white"
+            }`}
+          >
+            {resumeFile ? (
+              <div className="w-full max-w-sm">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700">
+                  <CheckCircle2 size={22} />
+                </div>
+                <p className="truncate text-sm font-semibold text-slate-950">
+                  {resumeFile.name}
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {(resumeFile.size / (1024 * 1024)).toFixed(2)} MB
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm shadow-slate-950/[0.03]">
+                  <Upload size={22} />
+                </div>
+                <p className="text-sm font-semibold text-slate-950">
+                  Click to upload or drag and drop
+                </p>
+                <p className="mt-1 text-sm text-slate-500">PDF only, max 10MB</p>
+              </>
+            )}
+
+            <input
+              type="file"
+              accept=".pdf,application/pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <PrimaryButton onClick={handleSubmit} disabled={loading} className="flex-1">
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
+              {loading ? "Analyzing..." : "Save & Analyze Resume"}
+            </PrimaryButton>
+
+            {resumeFile && (
+              <SecondaryButton type="button" onClick={handleClearFile}>
+                <X size={16} />
+                Remove
+              </SecondaryButton>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {loading && (
+        <section ref={loaderRef} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/[0.03]">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+              <Loader2 size={22} className="animate-spin" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-slate-950">Analyzing your resume</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Parsing the PDF, generating AI feedback, and saving the report.
+              </p>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-full w-2/3 animate-pulse rounded-full bg-slate-950" />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {!loading && analysisResult && (
+        <section ref={resultRef}>
+          <AnalysisResults data={analysisResult} />
+        </section>
       )}
     </div>
   );

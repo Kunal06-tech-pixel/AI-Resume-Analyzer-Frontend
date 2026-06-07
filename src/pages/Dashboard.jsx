@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertCircle,
+  ArrowUpRight,
   ChevronRight,
   Clock3,
   FileText,
-  Loader2,
+  Plus,
   Search,
+  Sparkles,
+  Target,
 } from "lucide-react";
 import ScoreRing from "../components/ScoreRing";
-import PageShell from "../components/ui/PageShell";
-import { PrimaryButton } from "../components/ui/Buttons";
+import AppShell from "../components/ui/AppShell";
+import { PrimaryButton, SecondaryButton } from "../components/ui/Buttons";
 import api from "../services/axios";
 import { useAuth } from "../context/useAuth";
 import {
@@ -19,71 +22,186 @@ import {
   normalizeAnalysis,
 } from "../utils/analysis";
 
-const AnalysisRow = ({ analysis, onNavigate }) => {
+const filterItems = [
+  { label: "All", value: "all" },
+  { label: "High fit", value: "high" },
+  { label: "Medium", value: "medium" },
+  { label: "Needs work", value: "low" },
+];
+
+const scoreBucket = (score) => {
+  if (score >= 75) return "high";
+  if (score >= 45) return "medium";
+  return "low";
+};
+
+const scoreBadgeClass = (score) => {
+  if (score >= 75) return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (score >= 45) return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-red-200 bg-red-50 text-red-700";
+};
+
+const StatCard = ({ label, value, icon, detail }) => {
+  const IconComponent = icon;
+
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/[0.03]">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{label}</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
+            {value}
+          </p>
+        </div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+          <IconComponent size={18} />
+        </div>
+      </div>
+      {detail && <p className="mt-3 text-sm text-slate-500">{detail}</p>}
+    </div>
+  );
+};
+
+const AnalysisMobileCard = ({ analysis, onNavigate }) => {
   const normalized = normalizeAnalysis(analysis);
   if (!normalized) return null;
 
+  const score = normalized.atsScore.score;
   const skills = normalized.skillsDetected.length
     ? normalized.skillsDetected
     : normalized.skillsMatch;
-  const visibleSkills = skills.slice(0, 5);
-  const remainingSkills = Math.max(0, skills.length - visibleSkills.length);
 
   return (
     <button
       type="button"
       onClick={() => onNavigate(normalized.id)}
-      className="group grid w-full grid-cols-[56px_1fr_18px] items-center gap-4 rounded-2xl bg-white/75 p-4 text-left shadow-md backdrop-blur-lg transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-xl"
+      className="w-full rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm shadow-slate-950/[0.03] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md md:hidden"
     >
-      <ScoreRing
-        score={normalized.atsScore.score}
-        size={54}
-        strokeWidth={4}
-        animated={false}
-      />
-
-      <div className="min-w-0">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-          <h3 className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-gray-900">
-            <FileText size={14} className="shrink-0 text-purple-600" />
-            <span className="truncate">{compactFileName(normalized.fileName)}</span>
-          </h3>
-          <span className="text-xs text-gray-400">
+      <div className="flex items-start gap-4">
+        <ScoreRing score={score} size={54} strokeWidth={4} animated={false} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="truncate text-sm font-semibold text-slate-950">
+              {compactFileName(normalized.fileName)}
+            </h3>
+            <ChevronRight size={17} className="shrink-0 text-slate-400" />
+          </div>
+          <p className="mt-1 text-xs text-slate-500">
             {formatRelativeTime(normalized.createdAt)}
-          </span>
-          <span className="text-xs font-medium text-purple-600">
-            ATS {normalized.atsScore.score}%
-          </span>
+          </p>
+          <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
+            {normalized.summary}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {skills.slice(0, 4).map((skill, index) => (
+              <span
+                key={`${skill}-${index}`}
+                className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
-
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {visibleSkills.map((skill, index) => (
-            <span
-              key={`${skill}-${index}`}
-              className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium text-purple-700"
-            >
-              {skill}
-            </span>
-          ))}
-          {remainingSkills > 0 && (
-            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700">
-              +{remainingSkills}
-            </span>
-          )}
-        </div>
-
-        <p className="mt-2 line-clamp-1 text-xs leading-relaxed text-gray-500">
-          {normalized.summary}
-        </p>
       </div>
-
-      <ChevronRight
-        size={18}
-        className="text-purple-300 transition group-hover:translate-x-0.5 group-hover:text-purple-600"
-      />
     </button>
   );
 };
+
+const AnalysisTable = ({ analyses, onNavigate }) => (
+  <div className="hidden overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-slate-950/[0.03] md:block">
+    <table className="w-full border-collapse text-left">
+      <thead className="border-b border-slate-200 bg-slate-50">
+        <tr className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          <th className="px-4 py-3">Resume</th>
+          <th className="px-4 py-3">Score</th>
+          <th className="px-4 py-3">Skills</th>
+          <th className="px-4 py-3">Updated</th>
+          <th className="px-4 py-3 text-right">Open</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100">
+        {analyses.map((analysis) => {
+          const normalized = normalizeAnalysis(analysis);
+          if (!normalized) return null;
+
+          const score = normalized.atsScore.score;
+          const skills = normalized.skillsDetected.length
+            ? normalized.skillsDetected
+            : normalized.skillsMatch;
+
+          return (
+            <tr
+              key={normalized.id}
+              className="group cursor-pointer transition hover:bg-slate-50"
+              onClick={() => onNavigate(normalized.id)}
+            >
+              <td className="max-w-[22rem] px-4 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500">
+                    <FileText size={17} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-950">
+                      {compactFileName(normalized.fileName)}
+                    </p>
+                    <p className="mt-1 line-clamp-1 text-xs text-slate-500">
+                      {normalized.summary}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td className="px-4 py-4">
+                <span
+                  className={`inline-flex items-center rounded-md border px-2 py-1 text-xs font-semibold ${scoreBadgeClass(score)}`}
+                >
+                  {score}% ATS
+                </span>
+              </td>
+              <td className="px-4 py-4">
+                <div className="flex max-w-sm flex-wrap gap-1.5">
+                  {skills.slice(0, 3).map((skill, index) => (
+                    <span
+                      key={`${skill}-${index}`}
+                      className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                  {skills.length > 3 && (
+                    <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">
+                      +{skills.length - 3}
+                    </span>
+                  )}
+                </div>
+              </td>
+              <td className="whitespace-nowrap px-4 py-4 text-sm text-slate-500">
+                {formatRelativeTime(normalized.createdAt)}
+              </td>
+              <td className="px-4 py-4 text-right">
+                <ArrowUpRight
+                  size={17}
+                  className="ml-auto text-slate-400 transition group-hover:text-slate-950"
+                />
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+);
+
+const DashboardSkeleton = () => (
+  <div className="space-y-3">
+    {[0, 1, 2, 3].map((item) => (
+      <div
+        key={item}
+        className="h-20 animate-pulse rounded-lg border border-slate-200 bg-white"
+      />
+    ))}
+  </div>
+);
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -92,6 +210,8 @@ const Dashboard = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     let active = true;
@@ -124,6 +244,49 @@ const Dashboard = () => {
     };
   }, []);
 
+  const normalizedAnalyses = useMemo(
+    () => analyses.map(normalizeAnalysis).filter(Boolean),
+    [analyses]
+  );
+
+  const filteredAnalyses = useMemo(() => {
+    const lowerQuery = query.trim().toLowerCase();
+
+    return normalizedAnalyses.filter((analysis) => {
+      const matchesFilter =
+        filter === "all" || scoreBucket(analysis.atsScore.score) === filter;
+
+      if (!matchesFilter) return false;
+      if (!lowerQuery) return true;
+
+      const haystack = [
+        analysis.fileName,
+        analysis.summary,
+        analysis.jobTitle,
+        analysis.companyName,
+        ...analysis.skillsDetected,
+        ...analysis.missingSkills,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(lowerQuery);
+    });
+  }, [filter, normalizedAnalyses, query]);
+
+  const averageScore = normalizedAnalyses.length
+    ? Math.round(
+        normalizedAnalyses.reduce(
+          (sum, analysis) => sum + analysis.atsScore.score,
+          0
+        ) / normalizedAnalyses.length
+      )
+    : 0;
+
+  const highFitCount = normalizedAnalyses.filter(
+    (analysis) => analysis.atsScore.score >= 75
+  ).length;
+
   const handleNavigateToResume = (analysisId) => {
     navigate(`/resume/${analysisId}`);
   };
@@ -131,78 +294,140 @@ const Dashboard = () => {
   const firstName = user?.name?.split(" ")?.[0];
 
   return (
-    <PageShell className="mx-auto w-full max-w-3xl px-4 pb-20 pt-8 sm:px-6">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-950 sm:text-3xl">
-          Welcome back{firstName ? `, ${firstName}` : ""}
-        </h1>
-        <p className="mt-2 text-sm text-gray-500">
-          You&apos;ve analyzed {total} {total === 1 ? "resume" : "resumes"} so
-          far. Keep improving.
-        </p>
-      </header>
+    <AppShell
+      title={`Welcome back${firstName ? `, ${firstName}` : ""}`}
+      description="Track resume quality, review AI feedback, and continue improving."
+      actions={
+        <PrimaryButton onClick={() => navigate("/analyzer")} className="hidden sm:inline-flex">
+          <Plus size={16} />
+          New analysis
+        </PrimaryButton>
+      }
+    >
+      <div className="mx-auto max-w-7xl space-y-6">
+        <section className="grid gap-4 md:grid-cols-3">
+          <StatCard
+            label="Total analyses"
+            value={total}
+            icon={FileText}
+            detail="Saved to your workspace"
+          />
+          <StatCard
+            label="Average ATS score"
+            value={`${averageScore}%`}
+            icon={Target}
+            detail="Across saved reports"
+          />
+          <StatCard
+            label="High-fit resumes"
+            value={highFitCount}
+            icon={Sparkles}
+            detail="Scored 75% or higher"
+          />
+        </section>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-950">
-            <Clock3 size={16} className="text-purple-500" />
-            Recent Analyses
-          </h2>
-          <span className="text-xs text-gray-500">{total} total</span>
-        </div>
+        <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/[0.03]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-950">
+                <Clock3 size={17} className="text-slate-500" />
+                Recent analyses
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Search and filter reports already loaded from your account.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative">
+                <Search
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-900/[0.06] sm:w-72"
+                  placeholder="Search resumes, skills, roles..."
+                />
+              </div>
+
+              <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+                {filterItems.map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setFilter(item.value)}
+                    className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                      filter === item.value
+                        ? "bg-white text-slate-950 shadow-sm shadow-slate-950/[0.04]"
+                        : "text-slate-500 hover:text-slate-950"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
         {error && (
-          <div className="mb-4 flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700 shadow-sm">
+          <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <AlertCircle size={16} />
             {error}
           </div>
         )}
 
         {loading ? (
-          <div className="space-y-3">
-            {[0, 1, 2].map((item) => (
-              <div
-                key={item}
-                className="h-24 animate-pulse rounded-2xl bg-white/70 shadow-md backdrop-blur-lg"
+          <DashboardSkeleton />
+        ) : filteredAnalyses.length > 0 ? (
+          <section className="space-y-3">
+            <AnalysisTable
+              analyses={filteredAnalyses}
+              onNavigate={handleNavigateToResume}
+            />
+            {filteredAnalyses.map((analysis) => (
+              <AnalysisMobileCard
+                key={analysis.id}
+                analysis={analysis}
+                onNavigate={handleNavigateToResume}
               />
             ))}
-          </div>
-        ) : analyses.length > 0 ? (
-          <div className="space-y-3">
-            {analyses.map((analysis) => {
-              const normalized = normalizeAnalysis(analysis);
-
-              return (
-                <AnalysisRow
-                  key={normalized?.id || analysis.id}
-                  analysis={analysis}
-                  onNavigate={handleNavigateToResume}
-                />
-              );
-            })}
-          </div>
+          </section>
         ) : (
-          <div className="rounded-2xl bg-white/75 p-8 text-center shadow-md backdrop-blur-lg">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-r from-purple-200 to-blue-200 text-purple-700">
+          <section className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm shadow-slate-950/[0.03]">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500">
               <Search size={22} />
             </div>
-            <h3 className="mt-4 text-sm font-semibold text-gray-950">
-              No analyses yet
+            <h3 className="mt-4 text-base font-semibold text-slate-950">
+              {normalizedAnalyses.length ? "No matching analyses" : "No analyses yet"}
             </h3>
-            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-gray-500">
-              Upload a PDF resume in the analyzer to create your first saved
-              report.
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
+              {normalizedAnalyses.length
+                ? "Try a different search term or score filter."
+                : "Upload a PDF resume in the analyzer to create your first saved report."}
             </p>
-            <PrimaryButton
-              onClick={() => navigate("/analyzer")}
-              className="mt-5"
-            >
-              Analyze Resume
-            </PrimaryButton>
-          </div>
+            <div className="mt-5 flex justify-center gap-3">
+              {normalizedAnalyses.length ? (
+                <SecondaryButton
+                  onClick={() => {
+                    setQuery("");
+                    setFilter("all");
+                  }}
+                >
+                  Clear filters
+                </SecondaryButton>
+              ) : (
+                <PrimaryButton onClick={() => navigate("/analyzer")}>
+                  Analyze Resume
+                </PrimaryButton>
+              )}
+            </div>
+          </section>
         )}
-      </section>
-    </PageShell>
+      </div>
+    </AppShell>
   );
 };
 

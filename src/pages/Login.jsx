@@ -3,7 +3,7 @@ import PageShell from "../components/ui/PageShell";
 
 const Login = () => {
   return (
-    <PageShell className="flex min-h-[calc(100vh-72px)] items-center justify-center px-4 py-12">
+    <PageShell className="grid min-h-[calc(100vh-4rem)] place-items-center px-4 py-12">
       <AuthCard />
     </PageShell>
   );

@@ -8,48 +8,38 @@ const steps = [
 
 const Stepper = ({ currentStep, setCurrentStep }) => {
   return (
-    <div className="mx-auto flex w-full max-w-4xl items-center justify-between overflow-x-auto rounded-2xl bg-white/60 px-4 py-4 shadow-md backdrop-blur-lg">
+    <div className="flex w-full items-center gap-2 overflow-x-auto rounded-lg border border-slate-200 bg-white p-2 shadow-sm shadow-slate-950/[0.03]">
       {steps.map((step, index) => {
         const stepNumber = index + 1;
         const isActive = currentStep === stepNumber;
         const isCompleted = currentStep > stepNumber;
 
         return (
-          <div key={step} className="flex shrink-0 items-center">
-            <div className="flex flex-col items-center">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(stepNumber)}
-                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${
-                  isCompleted
-                    ? "bg-linear-to-r from-purple-500 to-blue-500 text-white shadow-md"
-                    : isActive
-                    ? "border-2 border-purple-500 bg-white text-purple-600 shadow-sm"
-                    : "bg-purple-100 text-purple-400 hover:bg-purple-200"
-                }`}
-              >
-                {stepNumber}
-              </button>
-
-              <span
-                className={`mt-2 whitespace-nowrap text-center text-xs ${
-                  isActive ? "font-medium text-purple-600" : "text-gray-500"
-                }`}
-              >
-                {step}
-              </span>
-            </div>
-
-            {index !== steps.length - 1 && (
-              <div
-                className={`mx-3 h-0.5 w-16 md:w-24 ${
-                  isCompleted
-                    ? "bg-linear-to-r from-purple-500 to-blue-500"
-                    : "bg-purple-200"
-                }`}
-              />
-            )}
-          </div>
+          <button
+            key={step}
+            type="button"
+            onClick={() => setCurrentStep(stepNumber)}
+            className={`flex min-w-fit flex-1 items-center gap-3 rounded-md px-3 py-2 text-left transition ${
+              isActive
+                ? "bg-slate-950 text-white shadow-sm shadow-slate-950/15"
+                : isCompleted
+                ? "bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-950"
+            }`}
+          >
+            <span
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-semibold ${
+                isActive
+                  ? "bg-white text-slate-950"
+                  : isCompleted
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "border border-slate-200 bg-white text-slate-500"
+              }`}
+            >
+              {stepNumber}
+            </span>
+            <span className="whitespace-nowrap text-sm font-medium">{step}</span>
+          </button>
         );
       })}
     </div>
