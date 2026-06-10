@@ -1,4 +1,4 @@
-import api from "../../../utils/api";
+import api from "../../../services/axios";
 import { Sparkles } from "lucide-react";
 import { useToast } from "../../ui/useToast";
 import {
