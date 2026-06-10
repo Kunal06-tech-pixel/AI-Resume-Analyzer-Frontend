@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   CheckCircle2,
+  ArrowRight,
   FileText,
   Lightbulb,
   ShieldX,
@@ -10,7 +12,9 @@ import {
 } from "lucide-react";
 import ScoreRing from "./ScoreRing";
 import { normalizeAnalysis } from "../utils/analysis";
+import { analysisToOptimizationContext } from "../utils/builder";
 import FloatingChatButton from "./FloatingChatButton";
+import { PrimaryButton } from "./ui/Buttons";
 
 const tabs = [
   { label: "Overview", value: "overview" },
@@ -86,9 +90,18 @@ const BulletList = ({ items, tone = "slate" }) => {
 
 const AnalysisResults = ({ data }) => {
   const [activeTab, setActiveTab] = useState("overview");
+  const navigate = useNavigate();
   const analysis = normalizeAnalysis(data);
 
   if (!analysis) return null;
+
+  const handleOptimizeInBuilder = () => {
+    navigate("/builder", {
+      state: {
+        optimizationContext: analysisToOptimizationContext(analysis),
+      },
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -121,6 +134,13 @@ const AnalysisResults = ({ data }) => {
             <p className="mt-3 text-sm leading-7 text-slate-600">
               {analysis.summary}
             </p>
+            <div className="mt-5">
+              <PrimaryButton onClick={handleOptimizeInBuilder}>
+                <Sparkles size={16} />
+                Optimize in Builder
+                <ArrowRight size={16} />
+              </PrimaryButton>
+            </div>
           </div>
         </div>
       </section>

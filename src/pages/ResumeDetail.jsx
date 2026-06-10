@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   Download,
   FileText,
@@ -23,6 +24,7 @@ import {
   formatDateTime,
   normalizeAnalysis,
 } from "../utils/analysis";
+import { analysisToOptimizationContext } from "../utils/builder";
 
 const tabs = [
   { label: "Overview", value: "overview" },
@@ -154,6 +156,16 @@ const ResumeDetail = () => {
 
   const normalized = normalizeAnalysis(analysis);
 
+  const handleOptimizeInBuilder = () => {
+    if (!normalized) return;
+
+    navigate("/builder", {
+      state: {
+        optimizationContext: analysisToOptimizationContext(normalized),
+      },
+    });
+  };
+
   const handleExport = async () => {
     if (!normalized) return;
 
@@ -276,6 +288,11 @@ const ResumeDetail = () => {
           <SecondaryButton onClick={() => navigate("/dashboard")} className="hidden sm:inline-flex">
             <ArrowLeft size={16} />
             Dashboard
+          </SecondaryButton>
+          <SecondaryButton onClick={handleOptimizeInBuilder}>
+            <Sparkles size={16} />
+            Optimize
+            <ArrowRight size={16} />
           </SecondaryButton>
           <PrimaryButton onClick={handleExport} disabled={exporting}>
             <Download size={16} />
