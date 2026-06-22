@@ -164,6 +164,28 @@ const AnalysisResults = ({ data }) => {
 
       {activeTab === "overview" && (
         <div className="grid gap-4 lg:grid-cols-2">
+          {analysis.scoringMethod && (
+            <section className="liquid-glass rounded-2xl p-5 lg:col-span-2">
+              <h3 className="text-sm font-semibold text-slate-950">Local score breakdown</h3>
+              <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+                {[
+                  ["Skill match", analysis.skillScore],
+                  ["Semantic", analysis.semanticScore],
+                  ["Keywords", analysis.keywordScore],
+                  ["Resume quality", analysis.resumeQualityScore],
+                ].map(([label, value]) => (
+                  <div key={label} className="liquid-pill rounded-xl p-3">
+                    <p className="text-xs font-medium text-slate-500">{label}</p>
+                    <p className="mt-1 text-xl font-semibold text-slate-950">{value}%</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-xs leading-5 text-slate-500">
+                {analysis.scoringMethod}. Groq is used only for improvement suggestions.
+              </p>
+            </section>
+          )}
+
           <InsightCard title="Strengths" icon={CheckCircle2} tone="green">
             <BulletList items={analysis.strengths} tone="green" />
           </InsightCard>

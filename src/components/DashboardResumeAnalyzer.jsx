@@ -255,7 +255,7 @@ export default function DashboardResumeAnalyzer({ preloadedResult = null }) {
             <div className="flex-1">
               <p className="font-semibold text-slate-950">Analyzing your resume</p>
               <p className="mt-1 text-sm text-slate-500">
-                Parsing the PDF, generating AI feedback, and saving the report.
+                Parsing the PDF, matching skills with embeddings, generating suggestions, and saving the report.
               </p>
               <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
                 <div className="h-full w-2/3 animate-pulse rounded-full bg-slate-950" />
