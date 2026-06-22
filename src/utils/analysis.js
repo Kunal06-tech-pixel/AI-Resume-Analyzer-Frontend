@@ -71,6 +71,13 @@ export const normalizeAnalysis = (analysis) => {
       score: toScore(atsScore.score),
       level: atsScore.level || "",
     },
+    semanticScore: toScore(analysis.semanticScore),
+    skillScore: toScore(analysis.skillScore),
+    keywordScore: toScore(analysis.keywordScore),
+    resumeQualityScore: toScore(analysis.resumeQualityScore),
+    scoringMethod: analysis.scoringMethod || "",
+    skillMatches: Array.isArray(analysis.skillMatches) ? analysis.skillMatches : [],
+    suggestionSource: analysis.suggestionSource || "",
     createdAt: analysis.createdAt,
     updatedAt: analysis.updatedAt,
   };

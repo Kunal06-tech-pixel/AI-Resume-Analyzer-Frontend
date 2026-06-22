@@ -27,7 +27,7 @@ export default function Landing() {
   const { user } = useAuth();
 
   const features = [
-    { title: "AI analysis", icon: Brain, copy: "Summaries, strengths, gaps, and suggestions in one structured report." },
+    { title: "Local analysis", icon: Brain, copy: "Embedding-assisted skills, ATS scoring, gaps, and AI suggestions in one report." },
     { title: "ATS compatibility", icon: ShieldCheck, copy: "A clear score and keyword signals show exactly where the resume stands." },
     { title: "Job matching", icon: Target, copy: "Compare resume content against a target role and job description." },
     { title: "Resume builder", icon: FileText, copy: "Create a polished PDF from guided, recruiter-friendly sections." },
